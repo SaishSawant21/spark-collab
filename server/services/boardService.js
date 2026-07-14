@@ -1,4 +1,4 @@
-import { createBoardModel } from "../models/boardModel.js";
+import { createBoardModel, fetchBoardsModel, getBoardByIdModel } from "../models/boardModel.js";
 
 export const createBoardService = async(title, description, is_public, ownerId) =>{
     const trimTitle = title.trim() || '';
@@ -7,4 +7,16 @@ export const createBoardService = async(title, description, is_public, ownerId) 
     const trimDescription = description.trim() || '';
     const boardVisiblity = is_public ?? false;
     return await createBoardModel(trimTitle, trimDescription, boardVisiblity, ownerId);
+}
+
+export const getBoardsSerive = async(ownerId)=>{
+    return fetchBoardsModel(ownerId);
+}
+
+export const getBoardByIdService = async (ownerId,boardId)=>{
+    const board = await getBoardByIdModel(ownerId,boardId);
+    if(!board){
+        throw new Error ("Board not found");
+    }
+    return board;
 }

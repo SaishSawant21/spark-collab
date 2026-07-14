@@ -13,3 +13,22 @@ export const createBoardModel = async (title, description, is_public, ownerId) =
         throw error;
     }
 }
+
+export const fetchBoardsModel = async(ownerId) => {
+    try {
+        const fetchBoards = await db.query(`SELECT * FROM boards
+            WHERE owner_id=$1 ORDER BY created_at DESC;
+            `,[ownerId]);
+        return fetchBoards.rows;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }   
+}
+
+export const getBoardByIdModel = async (ownerId,boardId) =>{
+
+        const boardData = await db.query(`SELECT * FROM boards
+            WHERE owner_id = $1 AND id = $2`,[ownerId,boardId]);
+            return boardData.rows[0];
+}
