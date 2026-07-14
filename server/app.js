@@ -7,5 +7,5 @@ app.use(express.urlencoded({extended:true}));
 app.use(express.json());
 app.use(cookieParser());
 app.use('/api/auth',authRoutes);
-app.use('/api',boardRoutes);
+app.use('/api/boards',boardRoutes);
 export default app;
