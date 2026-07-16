@@ -3,7 +3,7 @@ import { createError } from "../utils/createError.js";
 
 export const createBoardService = async (title, description, is_public, ownerId) => {
 	const trimTitle = title?.trim() || '';
-	if (!trimTitle) throw new Error('Title is compulsory');
+	if (!trimTitle) throw createError('Title is compulsory', 400);
 	if (trimTitle.length > 100) throw createError('Title is too long', 400);
 	const trimDescription = description?.trim() || '';
 	const boardVisibility = is_public ?? false;
@@ -17,7 +17,7 @@ export const getBoardsSerive = async (ownerId) => {
 export const getBoardByIdService = async (ownerId, boardId) => {
 	const board = await getBoardByIdModel(ownerId, boardId);
 	if (!board) {
-		throw new Error("Board not found");
+		throw createError("Board not found", 400);
 	}
 	return board;
 }
@@ -29,7 +29,7 @@ export const updatedBoardService = async (boardId, ownerId, title, description, 
 		throw createError("Board not found", 404);
 	}
 	const trimTitle = title?.trim() || existingBoard.title;
-	if (!trimTitle) throw new Error('Title is compulsory');
+	if (!trimTitle) throw createError('Title is compulsory', 400);
 	const trimDescription = description?.trim() || existingBoard.description;
 	const boardVisibility = is_public ?? existingBoard.is_public;
 	return await updatedBoardModel(

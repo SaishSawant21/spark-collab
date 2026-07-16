@@ -1,6 +1,6 @@
 import { createBoardService, deleteBoardService, getBoardByIdService, getBoardsSerive, updatedBoardService } from "../services/boardService.js";
 
-export const createBoard = async (req, res) => {
+export const createBoard = async (req, res, next) => {
 	try {
 		const { title, description, is_public } = req.body;
 		const ownerId = req.user.id;
@@ -10,15 +10,11 @@ export const createBoard = async (req, res) => {
 			message: 'Board successfully created'
 		})
 	} catch (error) {
-		console.log(error);
-		return res.status(500).json({
-			code: 500,
-			message: 'Something went wrong'
-		})
+		next(error);
 	}
 }
 
-export const getBoards = async (req, res) => {
+export const getBoards = async (req, res, next) => {
 	try {
 		const ownerId = req.user.id;
 		const boards = await getBoardsSerive(ownerId);
@@ -28,15 +24,11 @@ export const getBoards = async (req, res) => {
 			boards
 		})
 	} catch (error) {
-		console.log(error);
-		return res.status(500).json({
-			code: 500,
-			message: 'Something went wrong'
-		})
+		next(error);
 	}
 }
 
-export const getBoardById = async (req, res) => {
+export const getBoardById = async (req, res, next) => {
 	try {
 		const ownerId = req.user.id;
 		const boardId = parseInt(req.params.id);
@@ -46,15 +38,11 @@ export const getBoardById = async (req, res) => {
 			message: 'Board fetched successfully'
 		})
 	} catch (error) {
-		console.log(error);
-		return res.status(500).json({
-			code: 500,
-			message: 'Something went wrong'
-		})
+		next(error);
 	}
 }
 
-export const updatedBoard = async (req, res) => {
+export const updatedBoard = async (req, res, next) => {
 	try {
 		const { title, description, is_public } = req.body;
 		const ownerId = parseInt(req.user.id);
@@ -65,15 +53,11 @@ export const updatedBoard = async (req, res) => {
 			message: 'Board updated successfully',
 		})
 	} catch (error) {
-		console.log(error);
-		return res.status(500).json({
-			code: 500,
-			message: 'Something went wrong'
-		})
+		next(error);
 	}
 }
 
-export const deleteBoard = async (req, res) => {
+export const deleteBoard = async (req, res, next) => {
 	try {
 		const ownerId = parseInt(req.user.id);
 		const boardId = parseInt(req.params.id);
@@ -83,10 +67,6 @@ export const deleteBoard = async (req, res) => {
 			message: 'Board deleted successfully',
 		})
 	} catch (error) {
-		console.log(error);
-		return res.status(500).json({
-			code: 500,
-			message: 'Something went wrong'
-		})
+		next(error);
 	}
 }
