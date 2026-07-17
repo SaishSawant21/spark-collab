@@ -3,7 +3,7 @@ import { generateWebAccessToken } from "../utils/jwt.js";
 import dotenv from 'dotenv';
 dotenv.config({ path: ".env.local" });
 
-export const register = async (req, res) => {
+export const register = async (req, res, next) => {
 	try {
 		const { username, email, password, avatar } = req.body;
 		const user = await registerUser(username, email, password, avatar);
@@ -18,7 +18,7 @@ export const register = async (req, res) => {
 	}
 }
 
-export const login = async (req, res) => {
+export const login = async (req, res, next) => {
 	try {
 		const { username, password } = req.body;
 		const user = await loginUser(username, password);
