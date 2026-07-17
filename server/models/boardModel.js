@@ -17,11 +17,18 @@ export const fetchBoardsModel = async (ownerId) => {
 
 }
 
-export const getBoardByIdModel = async (ownerId, boardId) => {
-	const boardData = await db.query(`SELECT * FROM boards
-            WHERE owner_id = $1 AND id = $2`, [ownerId, boardId]);
-	return boardData.rows[0];
-}
+export const getBoardByIdModel = async (boardId, ownerId = null) => {
+	let query = `SELECT * FROM boards WHERE id = $1`;
+	let values = [boardId];
+
+	if (ownerId !== null) {
+		query += ` AND owner_id = $2`;
+		values.push(ownerId);
+	}
+
+	const result = await db.query(query, values);
+	return result.rows[0];
+};
 
 export const updatedBoardModel = async (boardId, ownerId, title, description, boardVisibility) => {
 	const board = await db.query(`UPDATE boards 
@@ -36,3 +43,15 @@ export const deleteBoardModel = async (ownerId, boardId) => {
 		WHERE id=$1 AND owner_id=$2 RETURNING *`, [boardId, ownerId]);
 	return result.rows[0];
 }
+export const getBoardMemberModel = async (boardId, userId) => {
+	const result = await db.query(`SELECT * FROM board_members 
+		WHERE board_id=$1 AND user_id=$2 `, [boardId, userId]);
+	return result.rows[0];
+}
+
+export const addBoardMemberModel = async (boardId, userId, role) => {
+	const result = await db.query(`INSERT INTO board_members 
+	(board_id,user_id,role) VALUES($1,$2,$3)`, [boardId, userId, role]);
+	return result.rows[0];
+}
+

@@ -1,4 +1,5 @@
-import { createBoardModel, deleteBoardModel, fetchBoardsModel, getBoardByIdModel, updatedBoardModel } from "../models/boardModel.js";
+import { addBoardMemberModel, createBoardModel, deleteBoardModel, fetchBoardsModel, getBoardByIdModel, updatedBoardModel } from "../models/boardModel.js";
+import { getUserByIdModel } from "../models/userModel.js";
 import { createError } from "../utils/createError.js";
 
 export const createBoardService = async (title, description, is_public, ownerId) => {
@@ -44,4 +45,30 @@ export const deleteBoardService = async (ownerId, boardId) => {
 		throw createError("Board not found", 404);
 	}
 	return await deleteBoardModel(ownerId, boardId);
+}
+
+export const addBoardMemberService = async (boardId, ownerId, userId, role) => {
+	const existingBoard = await getBoardByIdModel(boardId);
+
+	if (!existingBoard) {
+		throw createError("Board not found", 404);
+	}
+	if (existingBoard.owner_id !== ownerId) {
+		throw createError("Forbidden", 403);
+	}
+	const existingUser = await getUserByIdModel(userId);
+	if (parseInt(existingUser.id) !== parseInt(userId)) throw createError("User not found", 404);
+
+	const validRoles = ["editor", "viewer"];
+
+	if (!validRoles.includes(role)) {
+		throw createError("Invalid role", 400);
+	}
+
+	if (ownerId === userId) throw createError('Cannot add owner as member.', 400);
+	return addBoardMemberModel(boardId, userId, role);
+}
+
+export const getBoardMembersService = async (boardId, ownerId) => {
+
 }

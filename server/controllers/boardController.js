@@ -1,4 +1,4 @@
-import { createBoardService, deleteBoardService, getBoardByIdService, getBoardsSerive, updatedBoardService } from "../services/boardService.js";
+import { addBoardMemberService, createBoardService, deleteBoardService, getBoardByIdService, getBoardMembersService, getBoardsSerive, updatedBoardService } from "../services/boardService.js";
 
 export const createBoard = async (req, res, next) => {
 	try {
@@ -65,6 +65,21 @@ export const deleteBoard = async (req, res, next) => {
 		return res.status(200).json({
 			code: 200,
 			message: 'Board deleted successfully',
+		})
+	} catch (error) {
+		next(error);
+	}
+}
+
+export const addBoardMember = async (req, res, next) => {
+	try {
+		const boardId = parseInt(req.params.boardId);
+		const ownerId = parseInt(req.user.id);
+		const { role, userId } = req.body;
+		const addMember = await addBoardMemberService(boardId, ownerId, userId, role);
+		return res.status(201).json({
+			code: 201,
+			message: 'Member added successfully',
 		})
 	} catch (error) {
 		next(error);
