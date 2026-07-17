@@ -1,6 +1,6 @@
 import db from './../config/db.js';
 
-export const createUser = async (username, email, password, avatar)=>{
+export const createUser = async (username, email, password, avatar) => {
     try {
         const executeQuery = await db.query(`INSERT into users 
             (username, email, password, avatar)
@@ -14,24 +14,30 @@ export const createUser = async (username, email, password, avatar)=>{
     }
 }
 
-export const checkEmail = async (email)=>{
+export const checkEmail = async (email) => {
     try {
         const result = await db.query(`SELECT * FROM users where email=$1`,
             [email]
-        ); 
+        );
         return result.rows[0];
     } catch (error) {
         throw error;
     }
 }
 
-export const checkUsername = async (username)=>{
+export const checkUsername = async (username) => {
     try {
         const result = await db.query(`SELECT * FROM users where username=$1`,
             [username]
-        ); 
+        );
         return result.rows[0];
     } catch (error) {
         throw error;
     }
+}
+
+export const getUserByIdModel = async (userId) => {
+    const result = await db.query(`SELECT id, username, email FROM users
+         WHERE id=$1`, [userId]);
+    return result.rows[0];
 }
