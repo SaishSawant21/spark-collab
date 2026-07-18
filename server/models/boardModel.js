@@ -55,3 +55,17 @@ export const addBoardMemberModel = async (boardId, userId, role) => {
 	return result.rows[0];
 }
 
+export const getBoardMembersModel = async (boardId) => {
+	const boardMembers = await db.query(`
+		SELECT u.id as user_id, u.username, bm.role, u.email from board_members bm
+		INNER JOIN users u on u.id = bm.user_id
+		WHERE bm.board_id = $1 
+		`, [boardId]);
+	return boardMembers.rows;
+};
+
+export const removeBoardMemberModel = async (boardId, userId) => {
+	const result = await db.query(`DELETE FROM board_members
+		WHERE board_id=$1 AND user_id=$2 RETURNING *`, [boardId, userId]);
+	return result.rows[0];
+}

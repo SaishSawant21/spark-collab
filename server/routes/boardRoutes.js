@@ -1,5 +1,5 @@
 import express from 'express';
-import { addBoardMember, createBoard, deleteBoard, getBoardById, getBoardMembers, getBoards, updatedBoard } from '../controllers/boardController.js';
+import { addBoardMember, createBoard, deleteBoard, getBoardById, getBoardMembers, getBoards, removeBoardMember, updatedBoard } from '../controllers/boardController.js';
 import { verifyToken } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
@@ -11,5 +11,6 @@ router.put('/:id', verifyToken, updatedBoard);
 router.delete('/:id', verifyToken, deleteBoard);
 router.post('/:boardId/members', verifyToken, addBoardMember);
 router.get('/:boardId/members', verifyToken, getBoardMembers);
+router.delete('/:boardId/members', verifyToken, removeBoardMember);
 
 export default router;

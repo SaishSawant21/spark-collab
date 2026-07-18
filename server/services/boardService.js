@@ -1,6 +1,7 @@
-import { addBoardMemberModel, createBoardModel, deleteBoardModel, fetchBoardsModel, getBoardByIdModel, updatedBoardModel } from "../models/boardModel.js";
+import { addBoardMemberModel, createBoardModel, deleteBoardModel, fetchBoardsModel, getBoardByIdModel, getBoardMemberModel, getBoardMembersModel, removeBoardMemberModel, updatedBoardModel } from "../models/boardModel.js";
 import { getUserByIdModel } from "../models/userModel.js";
 import { createError } from "../utils/createError.js";
+import { checkIfBoardExist } from "./boardHelper.js";
 
 export const createBoardService = async (title, description, is_public, ownerId) => {
 	const trimTitle = title?.trim() || '';
@@ -16,19 +17,12 @@ export const getBoardsSerive = async (ownerId) => {
 }
 
 export const getBoardByIdService = async (ownerId, boardId) => {
-	const board = await getBoardByIdModel(ownerId, boardId);
-	if (!board) {
-		throw createError("Board not found", 400);
-	}
-	return board;
+	return await checkIfBoardExist(boardId, ownerId);
 }
 
 export const updatedBoardService = async (boardId, ownerId, title, description, is_public) => {
-	const existingBoard = await getBoardByIdModel(ownerId, boardId);
+	const existingBoard = await checkIfBoardExist(ownerId, boardId);
 
-	if (!existingBoard) {
-		throw createError("Board not found", 404);
-	}
 	const trimTitle = title?.trim() || existingBoard.title;
 	if (!trimTitle) throw createError('Title is compulsory', 400);
 	const trimDescription = description?.trim() || existingBoard.description;
@@ -39,20 +33,12 @@ export const updatedBoardService = async (boardId, ownerId, title, description, 
 }
 
 export const deleteBoardService = async (ownerId, boardId) => {
-	const existingBoard = await getBoardByIdModel(ownerId, boardId);
-
-	if (!existingBoard) {
-		throw createError("Board not found", 404);
-	}
+	await checkIfBoardExist(ownerId, boardId);
 	return await deleteBoardModel(ownerId, boardId);
 }
 
 export const addBoardMemberService = async (boardId, ownerId, userId, role) => {
-	const existingBoard = await getBoardByIdModel(boardId);
-
-	if (!existingBoard) {
-		throw createError("Board not found", 404);
-	}
+	const existingBoard = await checkIfBoardExist(boardId);
 	if (existingBoard.owner_id !== ownerId) {
 		throw createError("Forbidden", 403);
 	}
@@ -69,6 +55,21 @@ export const addBoardMemberService = async (boardId, ownerId, userId, role) => {
 	return addBoardMemberModel(boardId, userId, role);
 }
 
-export const getBoardMembersService = async (boardId, ownerId) => {
+export const getBoardMembersService = async (boardId, userId) => {
+	const board = await checkIfBoardExist(boardId);
+	if (parseInt(board.owner_id) !== userId) {
+		const members = await getBoardMemberModel(boardId, userId);
+		if (!members) throw createError("Forbidden", 403);
+	}
+	return await getBoardMembersModel(boardId);
+}
 
+export const removeBoardMemberService = async (boardId, ownerId, userId) => {
+	const board = await checkIfBoardExist(boardId);
+	if (board.owner_id !== ownerId) {
+		throw createError("Forbidden", 403);
+	}
+	const member = await getBoardMemberModel(boardId, userId);
+	if (!member) throw createError("Member not found", 404);
+	return await removeBoardMemberModel(boardId, userId);
 }
