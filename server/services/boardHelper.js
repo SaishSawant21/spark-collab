@@ -1,3 +1,5 @@
+import { getBoardByIdModel } from "../models/boardModel.js";
+
 export const checkIfBoardExist = async (boardId, ownerId = null) => {
   const checkBoard = await getBoardByIdModel(boardId, ownerId);
 
