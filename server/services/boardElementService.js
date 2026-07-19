@@ -1,4 +1,4 @@
-import { addBoardElementModel, getBoardAllElementsModel, getBoardElementModel, updateBoardElementModel } from "../models/boardElementModel.js";
+import { addBoardElementModel, deleteBoardElementModel, getBoardAllElementsModel, getBoardElementModel, updateBoardElementModel } from "../models/boardElementModel.js";
 import { addBoardMemberModel, getBoardMemberModel } from "../models/boardModel.js";
 import { createError } from "../utils/createError.js";
 import { checkIfBoardExist } from "./boardHelper.js"
@@ -51,4 +51,19 @@ export const updateBoardElementService = async (elementContent) => {
   }
 
   return updateBoardElementModel(elementId, elementType, elementData);
+}
+
+export const deleteBoardElementService = async (boardId, elementId, userId) => {
+  if (!elementId) throw createError("Element ID is required", 400);
+  const element = await getBoardElementModel(elementId);
+  if (!element) throw createError("Element not found", 404);
+  if (element.board_id !== boardId) throw createError("Element does not belong to this board", 400);
+  const board = await checkIfBoardExist(element.board_id);
+  let member = null;
+  if (parseInt(board.owner_id) !== userId) {
+    member = await getBoardMemberModel(element?.board_id, userId);
+    if (!member) throw createError("Forbidden", 403);
+    if (member.role === 'viewer') throw createError("Forbidden", 403);
+  }
+  return await deleteBoardElementModel(elementId);
 }

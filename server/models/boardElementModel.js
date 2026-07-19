@@ -27,3 +27,9 @@ export const updateBoardElementModel = async (elementId, elementType, elementDat
     [elementType, elementData, elementId]);
   return result.rows[0];
 }
+
+export const deleteBoardElementModel = async (elementId) => {
+  const result = await db.query(`DELETE FROM board_elements 
+    WHERE id=$1 RETURNING *`, [elementId]);
+  return result.rows[0];
+}
