@@ -1,0 +1,58 @@
+import { addBoardElementService, getBoardElementService, updateBoardElementService } from "../services/boardElementService.js";
+
+export const addBoardElement = async (req, res, next) => {
+  try {
+    const { element_type, element_data } = req.body;
+    const elementContent = {
+      boardId: parseInt(req.params.boardId),
+      createdBy: parseInt(req.user.id),
+      elementType: element_type,
+      elementData: element_data
+    }
+    await addBoardElementService(elementContent);
+    return res.status(201).json({
+      code: 201,
+      message: 'Element created successfully'
+    })
+  } catch (error) {
+    next(error);
+  }
+}
+
+export const getBoardElement = async (req, res, next) => {
+  try {
+    const elementContent = {
+      boardId: parseInt(req.params.boardId),
+      userId: parseInt(req.user.id),
+    }
+    const boardElements = await getBoardElementService(elementContent);
+    return res.status(200).json({
+      code: 200,
+      message: 'Board Elements fetched successfully',
+      boardElements
+    })
+  } catch (error) {
+    next(error);
+  }
+}
+
+
+export const updateBoardElement = async (req, res, next) => {
+  try {
+    const { element_type, element_data } = req.body;
+    const elementContent = {
+      elementId: parseInt(req.params.elementId),
+      createdBy: parseInt(req.user.id),
+      elementType: element_type,
+      elementData: element_data
+    }
+
+    await updateBoardElementService(elementContent);
+    return res.status(200).json({
+      code: 200,
+      message: 'Element updated successfully'
+    })
+  } catch (error) {
+    next(error);
+  }
+}
