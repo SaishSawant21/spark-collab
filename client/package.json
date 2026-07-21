@@ -11,12 +11,14 @@
   },
   "dependencies": {
     "@ant-design/icons": "^6.3.2",
+    "@tailwindcss/vite": "^4.3.3",
     "antd": "^6.5.1",
     "konva": "^10.3.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-konva": "^19.2.5",
-    "socket.io-client": "^4.8.3"
+    "socket.io-client": "^4.8.3",
+    "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",
