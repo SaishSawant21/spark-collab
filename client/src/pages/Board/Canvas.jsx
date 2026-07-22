@@ -1,29 +1,63 @@
 import { Stage, Layer } from 'react-konva';
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Rectangle from './elements/Rectangle';
+import { BoardContext } from './context/BoardContext';
+import { TOOLS } from '../../utils/constants';
 
 const Canvas = () => {
-  const [elements, setElements] = useState([
-    {
-      id: 1,
+  const { selectedTool,
+    isDrawing, setIsDrawing,
+    currentElement, setCurrentElement,
+    elements, setElements } = useContext(BoardContext);
+
+  // const { selectedElementId } = useContext(BoardContext);
+
+  // useEffect(() => {
+  //   console.log("Canvas:", selectedElementId);
+  // }, [selectedElementId]);
+  const handleMouseDown = (e) => {
+    if (selectedTool !== TOOLS.RECTANGLE) return;
+    if (e.target !== e.target.getStage()) return;
+    const stage = e.target.getStage();
+    const position = stage.getPointerPosition();
+    setIsDrawing(true);
+    setCurrentElement({
+      id: Date.now(),
       element_type: "rectangle",
       element_data: {
-        x: 100,
-        y: 100,
-        width: 200,
-        height: 100,
+        x: position.x,
+        y: position.y,
+        width: 0,
+        height: 0,
         fill: "#fff",
         stroke: "#000",
-        strokeWidth: 2
-      }
-    }
-  ]
-  );
-
-  const handleStageClick = (e) => {
-    const { x, y } = e.target.getStage().getPointerPosition();
-    console.log(x, y);
+        strokeWidth: 2,
+      },
+    });
   }
+
+  const handleMouseMove = (e) => {
+    if (selectedTool !== TOOLS.RECTANGLE) return;
+    if (!isDrawing) return;
+    const stage = e.target.getStage();
+    const position = stage.getPointerPosition();
+    setCurrentElement((prev) => ({
+      ...prev,
+      element_data: {
+        ...prev.element_data,
+        width: position.x - prev.element_data.x,
+        height: position.y - prev.element_data.y
+      }
+    }))
+
+  }
+  const handleMouseUp = (e) => {
+    if (!isDrawing) return;
+    setElements((prev) => [...prev, currentElement]);
+    setCurrentElement(null);
+    setIsDrawing(false);
+  }
+
   return (
     <div
       style={{
@@ -35,15 +69,20 @@ const Canvas = () => {
       <Stage
         width={window.innerWidth}
         height={window.innerHeight}
-        onClick={handleStageClick}>
+        onMouseMove={handleMouseMove}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}>
         <Layer>
           {
             elements.map((element) => (
               <Rectangle key={element.id}
                 element={element}
-                setElements={setElements}
               />
             ))
+          }
+          {
+            currentElement &&
+            <Rectangle element={currentElement} />
           }
         </Layer>
       </Stage>

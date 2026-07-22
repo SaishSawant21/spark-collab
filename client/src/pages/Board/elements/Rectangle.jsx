@@ -1,7 +1,22 @@
 import { Rect } from "react-konva";
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
+import { BoardContext } from "../context/BoardContext";
+import { TOOLS } from "../../../utils/constants";
 
-const Rectangle = ({ element, setElements }) => {
+const Rectangle = ({ element }) => {
+  const { selectedTool,
+    setElements,
+    selectedElementId, setSelectedElementId } = useContext(BoardContext);
+
+  const handleClick = (e) => {
+    if (selectedTool !== TOOLS.SELECT) return;
+    e.cancelBubble = true;
+    setSelectedElementId(element.id);
+  }
+
+  useEffect(() => {
+    console.log(selectedElementId)
+  }, [selectedElementId])
   return (
     <Rect
       x={element.element_data.x}
@@ -11,7 +26,8 @@ const Rectangle = ({ element, setElements }) => {
       fill={element.element_data.fill}
       stroke={element.element_data.stroke}
       strokeWidth={element.element_data.strokeWidth}
-      draggable
+      draggable={selectedTool === TOOLS.SELECT}
+      onClick={handleClick}
       onDragEnd={(e) => setElements((prev) => (
         prev.map((item) => {
           if (item.id === element.id) {
