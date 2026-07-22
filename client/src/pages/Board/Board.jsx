@@ -1,9 +1,14 @@
 import React from 'react'
 import Canvas from './Canvas'
+import BoardProvider from './context/BoardContext'
+import ToolBar from './toolbar/ToolBar'
 
 const Board = () => {
   return (
-    <Canvas />
+    <BoardProvider>
+      <ToolBar />
+      <Canvas />
+    </BoardProvider>
   )
 }
 
