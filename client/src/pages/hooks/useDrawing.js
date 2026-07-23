@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { BoardContext } from '../Board/context/BoardContext';
 import { TOOLS } from '../../utils/constants';
 
@@ -46,7 +46,7 @@ const useDrawing = () => {
 
   }
 
-  const handleMouseUp = (e) => {
+  const handleMouseUp = () => {
     if (!isDrawing) return;
     setElements((prev) => [...prev, currentElement]);
     setCurrentElement(null);

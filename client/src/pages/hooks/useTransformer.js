@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import { useContext, useEffect } from 'react'
 import { BoardContext } from '../Board/context/BoardContext';
 
 const useTransformer = ({ transformerRef, rectangleRefs }) => {

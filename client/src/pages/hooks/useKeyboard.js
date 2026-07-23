@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import { useContext, useEffect } from 'react'
 import { BoardContext } from '../Board/context/BoardContext'
 
 const useKeyboard = ({ rectangleRefs }) => {
@@ -18,7 +18,7 @@ const useKeyboard = ({ rectangleRefs }) => {
       window.removeEventListener("keydown", handleKeyDown);
 
     }
-  }, [selectedElementId])
+  }, [elements, selectedElementId])
 }
 
 export default useKeyboard

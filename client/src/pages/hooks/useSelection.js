@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { TOOLS } from '../../utils/constants';
 import { BoardContext } from '../Board/context/BoardContext';
 

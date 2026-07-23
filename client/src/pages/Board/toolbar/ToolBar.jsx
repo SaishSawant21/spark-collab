@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { Button, Card, Flex } from 'antd';
 import {
 	SelectOutlined,
@@ -8,7 +8,9 @@ import { BoardContext } from '../context/BoardContext';
 import { TOOLS } from '../../../utils/constants';
 
 const ToolBar = () => {
-	const { selectedTool, setSelectedTool } = useContext(BoardContext);
+	const { selectedTool, setSelectedTool,
+		setSelectedElementId
+	} = useContext(BoardContext);
 
 	const buttonTypeSetter = (type) => {
 		if (type === selectedTool) return 'primary';
@@ -31,7 +33,10 @@ const ToolBar = () => {
 				<Button
 					icon={<BorderOutlined />}
 					type={buttonTypeSetter(TOOLS.RECTANGLE)}
-					onClick={() => setSelectedTool(TOOLS.RECTANGLE)}>
+					onClick={() => {
+						setSelectedElementId(null);
+						setSelectedTool(TOOLS.RECTANGLE)
+					}}>
 					Rectangle
 				</Button>
 			</Flex>
