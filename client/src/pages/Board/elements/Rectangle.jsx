@@ -2,17 +2,13 @@ import { Rect } from "react-konva";
 import { forwardRef, useContext } from 'react'
 import { BoardContext } from "../context/BoardContext";
 import { TOOLS } from "../../../utils/constants";
+import useElementInteractions from "../../hooks/useElementInteractions";
 
 const Rectangle = forwardRef(({ element }, ref) => {
   const { selectedTool,
     setElements,
     selectedElementId, setSelectedElementId } = useContext(BoardContext);
-
-  const handleSelect = (e) => {
-    if (selectedTool !== TOOLS.SELECT) return;
-    e.cancelBubble = true;
-    setSelectedElementId(element.id);
-  }
+  const interactions = useElementInteractions(element);
 
   const transformElement = (e) => {
     const node = e.target;
@@ -53,23 +49,9 @@ const Rectangle = forwardRef(({ element }, ref) => {
       fill={element.element_data.fill}
       stroke={selectedElementId === element.id ? '#1677ff' : element.element_data.stroke}
       strokeWidth={selectedElementId === element.id ? 3 : element.element_data.strokeWidth}
-      draggable={selectedTool === TOOLS.SELECT}
-      onMouseDown={handleSelect}
-      onDragEnd={(e) => setElements((prev) => (
-        prev.map((item) => {
-          if (item.id === element.id) {
-            return {
-              ...item,
-              element_data: {
-                ...item.element_data,
-                x: e.target.attrs.x,
-                y: e.target.attrs.y
-              }
-            }
-          }
-          return item;
-        })
-      ))}
+      draggable={interactions.draggable}
+      onMouseDown={interactions.handleSelect}
+      onDragEnd={interactions.handleDragEnd}
       onTransformEnd={transformElement}
     />
   )
