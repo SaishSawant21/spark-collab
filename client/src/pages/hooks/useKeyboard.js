@@ -1,24 +1,31 @@
-import { useContext, useEffect } from 'react'
+import { useCallback, useContext, useEffect } from 'react'
 import { BoardContext } from '../Board/context/BoardContext'
 
-const useKeyboard = ({ rectangleRefs }) => {
-  const { elements, setElements,
+const useKeyboard = () => {
+  const { setElements,
     selectedElementId, setSelectedElementId
-  } = useContext(BoardContext)
+  } = useContext(BoardContext);
+
+  const handleKeyDown = useCallback((e) => {
+    if (e.key !== "Delete") return;
+
+    setElements((prev) =>
+      prev.filter((item) => item.id !== selectedElementId)
+    );
+
+    setSelectedElementId(null);
+  }, [
+    selectedElementId,
+    setElements,
+    setSelectedElementId,
+  ]);
+
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key !== 'Delete') return;
-      const filteredElements = elements.filter((item) => item.id !== selectedElementId);
-      setElements(filteredElements);
-      delete rectangleRefs.current[selectedElementId];
-      setSelectedElementId(null);
-    }
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-
-    }
-  }, [elements, selectedElementId])
+    };
+  }, [handleKeyDown]);
 }
 
 export default useKeyboard
