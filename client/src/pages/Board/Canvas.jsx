@@ -1,5 +1,5 @@
 import { Stage, Layer } from 'react-konva';
-import { useContext, useRef } from 'react'
+import { useContext, useEffect, useRef } from 'react'
 import Rectangle from './elements/Rectangle';
 import { BoardContext } from './context/BoardContext';
 import { Transformer } from 'react-konva';
@@ -7,6 +7,7 @@ import useDrawing from '../hooks/useDrawing';
 import useTransformer from '../hooks/useTransformer';
 import useSelection from '../hooks/useSelection';
 import useKeyboard from '../hooks/useKeyboard';
+import elementRegistry from './elements/elementRegistry';
 
 const Canvas = () => {
 	const { currentElement,
@@ -17,9 +18,17 @@ const Canvas = () => {
 	const { handleMouseDown, handleMouseMove, handleMouseUp } = useDrawing();
 	const { handleStageDown } = useSelection();
 
-	useKeyboard({ rectangleRefs });
+	useKeyboard();
 	useTransformer({ transformerRef, rectangleRefs });
 
+	const renderCurrentElement = (elementData) => {
+		const Component = elementRegistry[elementData.element_type].component;
+		return Component ? <Component element={elementData} /> : <></>;
+	}
+
+	useEffect(() => {
+		console.log(elements)
+	}, [elements])
 	return (
 		<div
 			style={{
@@ -40,21 +49,21 @@ const Canvas = () => {
 				<Layer>
 					<Transformer ref={transformerRef} />
 					{
-						elements.map((element) => (
-							<Rectangle key={element.id}
+						elements.map((element) => {
+							const Component = elementRegistry[element?.element_type].component;
+							return Component ? <Component key={element?.id}
 								element={element}
 								ref={(node) => {
 									if (node) {
 										rectangleRefs.current[element.id] = node;
+									} else {
+										delete rectangleRefs.current[element.id];
 									}
 								}}
-							/>
-						))
+							/> : <></>
+						})
 					}
-					{
-						currentElement &&
-						<Rectangle element={currentElement} />
-					}
+					{currentElement && renderCurrentElement(currentElement)}
 				</Layer>
 			</Stage>
 		</div>
