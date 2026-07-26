@@ -13,7 +13,9 @@ const useTransformer = ({ transformerRef, rectangleRefs }) => {
 		if (!selectedNode) return;
 		transformerRef.current.nodes([selectedNode]);
 		transformerRef.current.getLayer().batchDraw();
-	}, [selectedElementId])
+	}, [selectedElementId,
+		rectangleRefs,
+		transformerRef,])
 }
 
 export default useTransformer
