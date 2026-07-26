@@ -3,6 +3,7 @@ import { Button, Card, Flex } from 'antd';
 import {
 	SelectOutlined,
 	BorderOutlined,
+	RadiusUprightOutlined
 } from "@ant-design/icons";
 import { BoardContext } from '../context/BoardContext';
 import { TOOLS } from '../../../utils/constants';
@@ -38,6 +39,22 @@ const ToolBar = () => {
 						setSelectedTool(TOOLS.RECTANGLE)
 					}}>
 					Rectangle
+				</Button>
+				<Button
+					type={buttonTypeSetter(TOOLS.LINE)}
+					onClick={() => setSelectedTool(TOOLS.LINE)} >
+					Line
+				</Button>
+				<Button
+					icon={<RadiusUprightOutlined />}
+					type={buttonTypeSetter(TOOLS.CIRCLE)}
+					onClick={() => setSelectedTool(TOOLS.CIRCLE)} >
+					Circle
+				</Button>
+				<Button
+					type={buttonTypeSetter(TOOLS.ARROW)}
+					onClick={() => setSelectedTool(TOOLS.ARROW)} >
+					Arrow
 				</Button>
 			</Flex>
 		</Card>
