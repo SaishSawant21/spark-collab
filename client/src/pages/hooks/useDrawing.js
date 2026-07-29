@@ -8,7 +8,8 @@ const useDrawing = () => {
   const { selectedTool,
     isDrawing, setIsDrawing,
     currentElement, setCurrentElement,
-    setElements
+    setElements,
+    updateElements
   } = useContext(BoardContext);
 
   const handleMouseDown = (e) => {
@@ -23,6 +24,8 @@ const useDrawing = () => {
       setCurrentElement(drawingRegistry.line(position, selectedTool));
     } else if (selectedTool === TOOLS.CIRCLE) {
       setCurrentElement(drawingRegistry.circle(position));
+    } else if (selectedTool === TOOLS.ELLIPSE) {
+      setCurrentElement(drawingRegistry.ellipse(position));
     }
   }
 
@@ -62,7 +65,6 @@ const useDrawing = () => {
         };
       });
     } else if (selectedTool === TOOLS.CIRCLE) {
-      const position = stage.getPointerPosition();
       setCurrentElement((prev) => {
         if (!prev) return null;
         const dx = position.x - prev.element_data.x;
@@ -73,6 +75,21 @@ const useDrawing = () => {
           element_data: {
             ...prev.element_data,
             radius
+          },
+        };
+      });
+    } else if (selectedTool === TOOLS.ELLIPSE) {
+      setCurrentElement((prev) => {
+        if (!prev) return null;
+        const dx = position.x - prev.element_data.x;
+        const dy = position.y - prev.element_data.y;
+
+        return {
+          ...prev,
+          element_data: {
+            ...prev.element_data,
+            radiusX: Math.abs(dx),
+            radiusY: Math.abs(dy)
           },
         };
       });
@@ -91,7 +108,7 @@ const useDrawing = () => {
         return;
       }
 
-      setElements((prev) => [...prev, currentElement]);
+      updateElements((prev) => [...prev, currentElement]);
     }
     setCurrentElement(null);
     setIsDrawing(false);
