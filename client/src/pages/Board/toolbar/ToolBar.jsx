@@ -10,7 +10,8 @@ import { TOOLS } from '../../../utils/constants';
 
 const ToolBar = () => {
 	const { selectedTool, setSelectedTool,
-		setSelectedElementId
+		setSelectedElementId,
+		undo, redo
 	} = useContext(BoardContext);
 
 	const buttonTypeSetter = (type) => {
@@ -55,6 +56,19 @@ const ToolBar = () => {
 					type={buttonTypeSetter(TOOLS.ARROW)}
 					onClick={() => setSelectedTool(TOOLS.ARROW)} >
 					Arrow
+				</Button>
+				<Button
+					type={buttonTypeSetter(TOOLS.ELLIPSE)}
+					onClick={() => setSelectedTool(TOOLS.ELLIPSE)} >
+					Ellipse
+				</Button>
+				<Button
+					onClick={undo} >
+					Undo
+				</Button>
+				<Button
+					onClick={redo} >
+					Redo
 				</Button>
 			</Flex>
 		</Card>
