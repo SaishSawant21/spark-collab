@@ -4,4 +4,5 @@ export const TOOLS = {
   LINE: 'line',
   CIRCLE: 'circle',
   ARROW: 'arrow',
+  ELLIPSE: 'ellipse',
 }

@@ -40,5 +40,16 @@ const drawingRegistry = {
       strokeWidth: DEFAULT_STYLES.strokeWidth,
     },
   }),
+  ellipse: (position) => ({
+    id: Date.now(),
+    element_type: "ellipse",
+    element_data: {
+      x: position.x,
+      y: position.y,
+      radiusX: 0,
+      radiusY: 0,
+      ...DEFAULT_STYLES,
+    },
+  }),
 };
 export default drawingRegistry;
