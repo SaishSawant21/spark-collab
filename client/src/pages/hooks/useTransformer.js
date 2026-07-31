@@ -1,7 +1,7 @@
 import { useContext, useEffect } from 'react'
 import { BoardContext } from '../Board/context/BoardContext';
 
-const useTransformer = ({ transformerRef, rectangleRefs }) => {
+const useTransformer = ({ transformerRef, elementRefs }) => {
 	const { selectedElementId } = useContext(BoardContext);
 	useEffect(() => {
 		if (!selectedElementId) {
@@ -9,12 +9,12 @@ const useTransformer = ({ transformerRef, rectangleRefs }) => {
 			transformerRef.current.getLayer().batchDraw();
 			return;
 		}
-		const selectedNode = rectangleRefs.current[selectedElementId];
+		const selectedNode = elementRefs.current[selectedElementId];
 		if (!selectedNode) return;
 		transformerRef.current.nodes([selectedNode]);
 		transformerRef.current.getLayer().batchDraw();
 	}, [selectedElementId,
-		rectangleRefs,
+		elementRefs,
 		transformerRef,])
 }
 

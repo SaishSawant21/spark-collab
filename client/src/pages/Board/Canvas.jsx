@@ -8,27 +8,26 @@ import useTransformer from '../hooks/useTransformer';
 import useSelection from '../hooks/useSelection';
 import useKeyboard from '../hooks/useKeyboard';
 import elementRegistry from './elements/elementRegistry';
+import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts';
 
 const Canvas = () => {
 	const { currentElement,
 		elements,
 	} = useContext(BoardContext);
 	const transformerRef = useRef(null);
-	const rectangleRefs = useRef({});
+	const elementRefs = useRef({});
 	const { handleMouseDown, handleMouseMove, handleMouseUp } = useDrawing();
 	const { handleStageDown } = useSelection();
 
 	useKeyboard();
-	useTransformer({ transformerRef, rectangleRefs });
+	useTransformer({ transformerRef, elementRefs });
+	useKeyboardShortcuts();
 
 	const renderCurrentElement = (elementData) => {
 		const Component = elementRegistry[elementData.element_type].component;
 		return Component ? <Component element={elementData} /> : <></>;
 	}
 
-	useEffect(() => {
-		console.log(elements)
-	}, [elements])
 	return (
 		<div
 			style={{
@@ -47,7 +46,7 @@ const Canvas = () => {
 				}}
 				onMouseUp={handleMouseUp}>
 				<Layer>
-					<Transformer ref={transformerRef} />
+					<Transformer ref={transformerRef} rotateEnabled={false} />
 					{
 						elements.map((element) => {
 							const Component = elementRegistry[element?.element_type].component;
@@ -55,9 +54,9 @@ const Canvas = () => {
 								element={element}
 								ref={(node) => {
 									if (node) {
-										rectangleRefs.current[element.id] = node;
+										elementRefs.current[element.id] = node;
 									} else {
-										delete rectangleRefs.current[element.id];
+										delete elementRefs.current[element.id];
 									}
 								}}
 							/> : <></>
