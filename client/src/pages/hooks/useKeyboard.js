@@ -7,13 +7,7 @@ const useKeyboard = () => {
   } = useContext(BoardContext);
 
   const handleKeyDown = useCallback((e) => {
-    if (e.key !== "Delete") return;
 
-    setElements((prev) =>
-      prev.filter((item) => item.id !== selectedElementId)
-    );
-
-    setSelectedElementId(null);
   }, [
     selectedElementId,
     setElements,
