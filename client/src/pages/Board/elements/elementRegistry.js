@@ -9,8 +9,8 @@ const elementRegistry = {
 		component: Rectangle,
 		isValid: (element) => {
 			return (
-				Math.abs(element.element_data.width) > 0 &&
-				Math.abs(element.element_data.height) > 0
+				Math.abs(element.element_data.width) > 5 &&
+				Math.abs(element.element_data.height) > 5
 			);
 		},
 	},
@@ -26,7 +26,7 @@ const elementRegistry = {
 	circle: {
 		component: CircleElement,
 		isValid: (element) => {
-			return element.element_data.radius > 0;
+			return element.element_data.radius > 5;
 		},
 	},
 	arrow: {
@@ -39,8 +39,8 @@ const elementRegistry = {
 	ellipse: {
 		component: EllipseElement,
 		isValid: (element) =>
-			element.element_data.radiusX > 0 &&
-			element.element_data.radiusY > 0,
+			element.element_data.radiusX > 5 &&
+			element.element_data.radiusY > 5,
 	}
 };
 export default elementRegistry;
