@@ -15,6 +15,9 @@ const EllipseElement = forwardRef(({ element }, ref) => {
 			stroke={elementData.stroke}
 			strokeWidth={elementData.strokeWidth}
 			draggable={interactions.draggable}
+			onMouseDown={interactions.handleSelect}
+			onDragEnd={interactions.handleDragEnd}
+			onTransformEnd={interactions.transformElement}
 		/>
 	)
 })
