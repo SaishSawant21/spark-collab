@@ -1,11 +1,14 @@
 import { useContext } from "react";
 import { BoardContext } from "../Board/context/BoardContext";
 import { TOOLS } from "../../utils/constants";
+import applyTransform from "../../utils/applyTransform";
+import applyDrag from "../../utils/applyDrag";
 
 const useElementInteractions = (element) => {
   const { selectedTool,
     setSelectedElementId,
-    setElements
+    setElements,
+    updateElements
   } = useContext(BoardContext);
   const handleSelect = (e) => {
     if (selectedTool !== TOOLS.SELECT) return;
@@ -13,27 +16,30 @@ const useElementInteractions = (element) => {
     setSelectedElementId(element.id);
   }
   const handleDragEnd = (e) => {
-    const { x, y } = e.target.position();
-    setElements((prev) => (
-      prev.map((item) => {
-        if (item.id === element.id) {
-          return {
-            ...item,
-            element_data: {
-              ...item.element_data,
-              x: x,
-              y: y
-            }
-          }
-        }
-        return item;
-      })
-    ))
-  }
+    const updatedElement = applyDrag(element, e.target);
+
+    updateElements((prev) =>
+      prev.map((item) =>
+        item.id === updatedElement.id ? updatedElement : item
+      )
+    );
+  };
+
+  const transformElement = (e) => {
+    const updatedElement = applyTransform(element, e.target);
+
+    updateElements((prev) =>
+      prev.map((item) =>
+        item.id === updatedElement.id ? updatedElement : item
+      )
+    );
+  };
+
   return {
     draggable: selectedTool === TOOLS.SELECT,
     handleSelect,
-    handleDragEnd
+    handleDragEnd,
+    transformElement
   };
 }
 export default useElementInteractions;
