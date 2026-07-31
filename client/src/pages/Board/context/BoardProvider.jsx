@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { BoardContext } from "./BoardContext";
 import { TOOLS } from "../../../utils/constants";
+import offsetElement from "../../../utils/offsetElement";
 const BoardProvider = ({ children }) => {
   const [selectedTool, setSelectedTool] = useState(TOOLS.SELECT);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -57,6 +58,17 @@ const BoardProvider = ({ children }) => {
     setRedoStack((prev) => prev.slice(0, -1));
   }
 
+  const duplicateSelectedElement = () => {
+    if (!selectedElementId) return;
+    const selectedElement = elements.find((item) => item.id === selectedElementId);
+    if (!selectedElement) return;
+    const clone = structuredClone(selectedElement);
+    clone.id = Date.now();
+    const duplicatedElement = offsetElement(clone, 20, 20);
+    updateElements((prev) => [...prev, duplicatedElement]);
+    setSelectedElementId(duplicatedElement.id);
+  }
+
   const value = {
     selectedTool,
     setSelectedTool,
@@ -78,6 +90,8 @@ const BoardProvider = ({ children }) => {
     undo,
 
     redo,
+
+    duplicateSelectedElement,
   };
 
   return (
