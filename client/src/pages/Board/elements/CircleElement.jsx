@@ -1,7 +1,7 @@
 import { forwardRef, useContext } from "react";
 import { Circle } from "react-konva";
 import useElementInteractions from "../../hooks/useElementInteractions";
-import { BoardContext } from "../context/BoardContext";
+import { BoardContext } from "../../../context/BoardContext";
 
 const CircleElement = forwardRef(({ element }, ref) => {
   const elementData = element.element_data;
