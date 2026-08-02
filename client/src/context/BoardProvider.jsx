@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { BoardContext } from "./BoardContext";
-import { TOOLS } from "../../../utils/constants";
-import offsetElement from "../../../utils/offsetElement";
+import { TOOLS } from "../utils/constants";
+import offsetElement from "../utils/offsetElement";
 const BoardProvider = ({ children }) => {
   const [selectedTool, setSelectedTool] = useState(TOOLS.SELECT);
   const [isDrawing, setIsDrawing] = useState(false);
