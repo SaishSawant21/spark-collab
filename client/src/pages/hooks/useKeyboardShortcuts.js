@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect } from "react";
-import { BoardContext } from "../Board/context/BoardContext";
+import { BoardContext } from "../../context/BoardContext";
 
 const useKeyboardShortcuts = () => {
   const { undo, redo,

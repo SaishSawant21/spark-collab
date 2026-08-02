@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { BoardContext } from '../Board/context/BoardContext';
+import { BoardContext } from '../../context/BoardContext';
 import { TOOLS } from '../../utils/constants';
 import elementRegistry from '../Board/elements/elementRegistry';
 import drawingRegistry from '../Board/elements/drawingRegistry';

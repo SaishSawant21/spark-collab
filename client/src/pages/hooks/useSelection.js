@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 import { TOOLS } from '../../utils/constants';
-import { BoardContext } from '../Board/context/BoardContext';
+import { BoardContext } from '../../context/BoardContext';
 
 const useSelection = () => {
 	const { selectedTool,

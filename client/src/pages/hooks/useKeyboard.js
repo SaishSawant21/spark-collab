@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect } from 'react'
-import { BoardContext } from '../Board/context/BoardContext'
+import { BoardContext } from '../../context/BoardContext'
 
 const useKeyboard = () => {
   const { setElements,

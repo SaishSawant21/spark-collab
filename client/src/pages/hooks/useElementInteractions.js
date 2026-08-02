@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { BoardContext } from "../Board/context/BoardContext";
+import { BoardContext } from "../../context/BoardContext";
 import { TOOLS } from "../../utils/constants";
 import applyTransform from "../../utils/applyTransform";
 import applyDrag from "../../utils/applyDrag";
