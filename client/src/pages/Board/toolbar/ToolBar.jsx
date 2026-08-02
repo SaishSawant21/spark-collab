@@ -1,77 +1,80 @@
-import { useContext } from 'react';
-import { Button, Card, Flex } from 'antd';
-import {
-	SelectOutlined,
-	BorderOutlined,
-	RadiusUprightOutlined
-} from "@ant-design/icons";
-import { BoardContext } from '../context/BoardContext';
-import { TOOLS } from '../../../utils/constants';
+import { useContext } from "react";
+import { Button, Flex, Tooltip } from "antd";
+import { UndoOutlined, RedoOutlined } from "@ant-design/icons";
 
-const ToolBar = () => {
-	const { selectedTool, setSelectedTool,
+import { BoardContext } from "../../../context/BoardContext";
+import { TOOL_LIST } from "./tools";
+import { TOOLS } from "../../../utils/constants";
+
+const Toolbar = () => {
+	const {
+		selectedTool,
+		setSelectedTool,
 		setSelectedElementId,
-		undo, redo
+		undo,
+		redo,
 	} = useContext(BoardContext);
 
-	const buttonTypeSetter = (type) => {
-		if (type === selectedTool) return 'primary';
-		else return 'default';
-	}
+	const handleToolSelect = (tool) => {
+		if (tool !== TOOLS.SELECT) {
+			setSelectedElementId(null);
+		}
+
+		setSelectedTool(tool);
+	};
+
 	return (
-		<Card className='fixed top-4 left-1/2 -translate-x-1/2 z-50'
-			styles={{
-				body: {
-					padding: 8,
-				},
-			}}>
-			<Flex gap={8}>
+		<Flex
+			vertical
+			align="center"
+			gap={12}
+			className="py-4"
+		>
+			{TOOL_LIST.map((tool) => {
+				const Icon = tool.icon;
+
+				return (
+					<Tooltip
+						key={tool.key}
+						placement="right"
+						title={tool.label}
+					>
+						<Button
+							type={selectedTool === tool.key ? "primary" : "text"}
+							shape="default"
+							size="large"
+							className="!w-12 !h-12 rounded-xl flex items-center justify-center"
+							onClick={() => handleToolSelect(tool.key)}
+						>
+							<Icon size={22} />
+						</Button>
+					</Tooltip>
+				);
+			})}
+
+			<div className="w-8 border-t border-slate-300 my-2" />
+
+			<Tooltip title="Undo" placement="right">
 				<Button
-					icon={<SelectOutlined />}
-					type={buttonTypeSetter(TOOLS.SELECT)}
-					onClick={() => setSelectedTool(TOOLS.SELECT)} >
-					Select
-				</Button>
+					type="text"
+					size="large"
+					className="!w-10 !h-10"
+					icon={<UndoOutlined />}
+					onClick={undo}
+				/>
+			</Tooltip>
+
+			<Tooltip title="Redo" placement="right">
 				<Button
-					icon={<BorderOutlined />}
-					type={buttonTypeSetter(TOOLS.RECTANGLE)}
-					onClick={() => {
-						setSelectedElementId(null);
-						setSelectedTool(TOOLS.RECTANGLE)
-					}}>
-					Rectangle
-				</Button>
-				<Button
-					type={buttonTypeSetter(TOOLS.LINE)}
-					onClick={() => setSelectedTool(TOOLS.LINE)} >
-					Line
-				</Button>
-				<Button
-					icon={<RadiusUprightOutlined />}
-					type={buttonTypeSetter(TOOLS.CIRCLE)}
-					onClick={() => setSelectedTool(TOOLS.CIRCLE)} >
-					Circle
-				</Button>
-				<Button
-					type={buttonTypeSetter(TOOLS.ARROW)}
-					onClick={() => setSelectedTool(TOOLS.ARROW)} >
-					Arrow
-				</Button>
-				<Button
-					type={buttonTypeSetter(TOOLS.ELLIPSE)}
-					onClick={() => setSelectedTool(TOOLS.ELLIPSE)} >
-					Ellipse
-				</Button>
-				<Button
-					onClick={undo} >
-					Undo
-				</Button>
-				<Button
-					onClick={redo} >
-					Redo
-				</Button>
-			</Flex>
-		</Card>
-	)
-}
-export default ToolBar;
+					type="text"
+					size="large"
+					className="!w-10 !h-10"
+					icon={<RedoOutlined />}
+					onClick={redo}
+				/>
+			</Tooltip>
+		</Flex>
+	);
+};
+
+export default Toolbar;
