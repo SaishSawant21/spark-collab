@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { socket } from "./socket";
 import Board from "./pages/Board/Board";
+import AppLayout from "./layouts/AppLayout";
+import BoardProvider from "./context/BoardProvider";
 
 function App() {
   useEffect(() => {
@@ -25,7 +27,11 @@ function App() {
     socket.connect();
   }, []);
   return (
-    <><Board /></>
+    <BoardProvider>
+      <AppLayout>
+        <Board />
+      </AppLayout>
+    </BoardProvider>
   )
 }
 

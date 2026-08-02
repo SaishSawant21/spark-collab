@@ -1,7 +1,7 @@
 import { Stage, Layer } from 'react-konva';
-import { useContext, useEffect, useRef } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import Rectangle from './elements/Rectangle';
-import { BoardContext } from './context/BoardContext';
+import { BoardContext } from '../../context/BoardContext';
 import { Transformer } from 'react-konva';
 import useDrawing from '../hooks/useDrawing';
 import useTransformer from '../hooks/useTransformer';
@@ -14,8 +14,15 @@ const Canvas = () => {
 	const { currentElement,
 		elements,
 	} = useContext(BoardContext);
+	const containerRef = useRef(null);
+
+	const [stageSize, setStageSize] = useState({
+		width: 0,
+		height: 0,
+	});
 	const transformerRef = useRef(null);
 	const elementRefs = useRef({});
+
 	const { handleMouseDown, handleMouseMove, handleMouseUp } = useDrawing();
 	const { handleStageDown } = useSelection();
 
@@ -28,17 +35,31 @@ const Canvas = () => {
 		return Component ? <Component element={elementData} /> : <></>;
 	}
 
+	useEffect(() => {
+		if (!containerRef.current) return;
+
+		const resizeObserver = new ResizeObserver(([entry]) => {
+			const { width, height } = entry.contentRect;
+
+			setStageSize({
+				width,
+				height,
+			});
+		});
+
+		resizeObserver.observe(containerRef.current);
+
+		return () => resizeObserver.disconnect();
+	}, []);
+
 	return (
 		<div
-			style={{
-				width: "100vw",
-				height: "100vh",
-				background: "#f5f5f5",
-			}}
+			className='w-full h-full bg-slate-100'
+			ref={containerRef}
 		>
 			<Stage
-				width={window.innerWidth}
-				height={window.innerHeight}
+				width={stageSize.width}
+				height={stageSize.height}
 				onMouseMove={handleMouseMove}
 				onMouseDown={(e) => {
 					handleMouseDown(e)
