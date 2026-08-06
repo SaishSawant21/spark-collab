@@ -1,11 +1,11 @@
-import { Collapse, ColorPicker, Form, InputNumber, Typography } from "antd";
+import { Button, Collapse, ColorPicker, Form, InputNumber, Space, Typography } from "antd";
 import { useContext } from "react";
 import { BoardContext } from "../../context/BoardContext";
 import { TOOLS } from "../../utils/constants";
 import PropertyField from "./PropertyField";
 
 const PropertiesPanel = ({ selectedElement }) => {
-	const { updateElements } = useContext(BoardContext);
+	const { updateElements, bringForward, sendBackward } = useContext(BoardContext);
 
 	if (!selectedElement) {
 		return <>Empty State</>;
@@ -214,6 +214,30 @@ const PropertiesPanel = ({ selectedElement }) => {
 				return null;
 		}
 	};
+	const renderArrange = () => {
+		return (
+			<Form layout="vertical">
+				<PropertyField>
+					<Space>
+						<Button
+							block
+							onClick={() =>
+								bringForward(selectedElement.id)
+							}
+						>
+							Bring Forward
+						</Button>
+						<Button
+							block
+							onClick={() => sendBackward(selectedElement.id)}
+						>
+							Send Backward
+						</Button>
+					</Space>
+				</PropertyField>
+			</Form>
+		);
+	};
 
 	return (
 		<>
@@ -223,7 +247,7 @@ const PropertiesPanel = ({ selectedElement }) => {
 			</Typography.Title>
 
 			<Collapse
-				defaultActiveKey={["appearance", "geometry"]}
+				// defaultActiveKey={["appearance", "geometry"]}
 				ghost
 				items={[
 					{
@@ -276,6 +300,11 @@ const PropertiesPanel = ({ selectedElement }) => {
 						label: "Geometry",
 						children: renderGeometry(),
 					},
+					{
+						key: "arrange",
+						label: "Arrange",
+						children: renderArrange(),
+					}
 				]}
 			/>
 		</>

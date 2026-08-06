@@ -69,6 +69,44 @@ const BoardProvider = ({ children }) => {
     setSelectedElementId(duplicatedElement.id);
   }
 
+  const bringForward = (id) => {
+    updateElements((prev) => {
+      const index = prev.findIndex((element) => element.id === id);
+
+      if (index === -1 || index === prev.length - 1) {
+        return prev;
+      }
+
+      const next = [...prev];
+
+      [next[index], next[index + 1]] = [
+        next[index + 1],
+        next[index],
+      ];
+
+      return next;
+    });
+  };
+
+  const sendBackward = (id) => {
+    updateElements((prev) => {
+      const index = prev.findIndex((element) => element.id === id);
+
+      if (index <= 0) {
+        return prev;
+      }
+
+      const next = [...prev];
+
+      [next[index], next[index - 1]] = [
+        next[index - 1],
+        next[index],
+      ];
+
+      return next;
+    });
+  };
+
   const value = {
     selectedTool,
     setSelectedTool,
@@ -92,6 +130,8 @@ const BoardProvider = ({ children }) => {
     redo,
 
     duplicateSelectedElement,
+    bringForward,
+    sendBackward
   };
 
   return (
