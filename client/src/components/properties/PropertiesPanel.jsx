@@ -5,7 +5,7 @@ import { TOOLS } from "../../utils/constants";
 import PropertyField from "./PropertyField";
 
 const PropertiesPanel = ({ selectedElement }) => {
-	const { updateElements, bringForward, sendBackward } = useContext(BoardContext);
+	const { updateElements, bringForward, sendBackward, bringToFront, sendToBack } = useContext(BoardContext);
 
 	if (!selectedElement) {
 		return <>Empty State</>;
@@ -218,7 +218,7 @@ const PropertiesPanel = ({ selectedElement }) => {
 		return (
 			<Form layout="vertical">
 				<PropertyField>
-					<Space>
+					<Space vertical>
 						<Button
 							block
 							onClick={() =>
@@ -232,6 +232,18 @@ const PropertiesPanel = ({ selectedElement }) => {
 							onClick={() => sendBackward(selectedElement.id)}
 						>
 							Send Backward
+						</Button>
+						<Button
+							block
+							onClick={() => bringToFront(selectedElement.id)}
+						>
+							Bring To Front
+						</Button>
+						<Button
+							block
+							onClick={() => sendToBack(selectedElement.id)}
+						>
+							Send To Back
 						</Button>
 					</Space>
 				</PropertyField>

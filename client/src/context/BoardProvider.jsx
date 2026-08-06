@@ -106,7 +106,39 @@ const BoardProvider = ({ children }) => {
       return next;
     });
   };
+  const bringToFront = (id) => {
+    updateElements((prev) => {
+      const index = prev.findIndex((element) => element.id === id);
 
+      if (index === -1 || index === prev.length - 1) {
+        return prev;
+      }
+
+      const next = [...prev];
+      const [element] = next.splice(index, 1);
+
+      next.push(element);
+
+      return next;
+    });
+  };
+
+  const sendToBack = (id) => {
+    updateElements((prev) => {
+      const index = prev.findIndex((element) => element.id === id);
+
+      if (index <= 0) {
+        return prev;
+      }
+
+      const next = [...prev];
+      const [element] = next.splice(index, 1);
+
+      next.unshift(element);
+
+      return next;
+    });
+  };
   const value = {
     selectedTool,
     setSelectedTool,
@@ -131,7 +163,9 @@ const BoardProvider = ({ children }) => {
 
     duplicateSelectedElement,
     bringForward,
-    sendBackward
+    sendBackward,
+    bringToFront,
+    sendToBack
   };
 
   return (
