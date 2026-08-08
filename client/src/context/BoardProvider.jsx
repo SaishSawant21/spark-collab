@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { BoardContext } from "./BoardContext";
 import { TOOLS } from "../utils/constants";
 import offsetElement from "../utils/offsetElement";
+import useElementActions from "./actions/elementActions";
+import useBoardSocket from "../pages/hooks/useBoardSocket";
 const BoardProvider = ({ children }) => {
   const [selectedTool, setSelectedTool] = useState(TOOLS.SELECT);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -25,17 +27,30 @@ const BoardProvider = ({ children }) => {
   const [selectedElementId, setSelectedElementId] = useState(null);
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
-  const saveHistory = () => {
-    setUndoStack((prev) => [
-      ...prev, structuredClone(elements)
-    ]);
-    setRedoStack([]);
-  }
 
-  const updateElements = (updater) => {
-    saveHistory();
-    setElements(updater);
-  }
+  const saveHistory = useCallback(() => {
+    setUndoStack((prev) => [
+      ...prev,
+      structuredClone(elements),
+    ]);
+
+    setRedoStack([]);
+  }, [elements]);
+
+  const updateElements = useCallback((updater) => {
+    setElements((prev) => {
+      setUndoStack((history) => [
+        ...history,
+        structuredClone(prev),
+      ]);
+
+      setRedoStack([]);
+
+      return typeof updater === "function"
+        ? updater(prev)
+        : updater;
+    });
+  }, []);
 
   const undo = () => {
     if (undoStack.length === 0) return;
@@ -57,88 +72,20 @@ const BoardProvider = ({ children }) => {
     setElements(nextState);
     setRedoStack((prev) => prev.slice(0, -1));
   }
-
-  const duplicateSelectedElement = () => {
-    if (!selectedElementId) return;
-    const selectedElement = elements.find((item) => item.id === selectedElementId);
-    if (!selectedElement) return;
-    const clone = structuredClone(selectedElement);
-    clone.id = Date.now();
-    const duplicatedElement = offsetElement(clone, 20, 20);
-    updateElements((prev) => [...prev, duplicatedElement]);
-    setSelectedElementId(duplicatedElement.id);
-  }
-
-  const bringForward = (id) => {
-    updateElements((prev) => {
-      const index = prev.findIndex((element) => element.id === id);
-
-      if (index === -1 || index === prev.length - 1) {
-        return prev;
-      }
-
-      const next = [...prev];
-
-      [next[index], next[index + 1]] = [
-        next[index + 1],
-        next[index],
-      ];
-
-      return next;
-    });
-  };
-
-  const sendBackward = (id) => {
-    updateElements((prev) => {
-      const index = prev.findIndex((element) => element.id === id);
-
-      if (index <= 0) {
-        return prev;
-      }
-
-      const next = [...prev];
-
-      [next[index], next[index - 1]] = [
-        next[index - 1],
-        next[index],
-      ];
-
-      return next;
-    });
-  };
-  const bringToFront = (id) => {
-    updateElements((prev) => {
-      const index = prev.findIndex((element) => element.id === id);
-
-      if (index === -1 || index === prev.length - 1) {
-        return prev;
-      }
-
-      const next = [...prev];
-      const [element] = next.splice(index, 1);
-
-      next.push(element);
-
-      return next;
-    });
-  };
-
-  const sendToBack = (id) => {
-    updateElements((prev) => {
-      const index = prev.findIndex((element) => element.id === id);
-
-      if (index <= 0) {
-        return prev;
-      }
-
-      const next = [...prev];
-      const [element] = next.splice(index, 1);
-
-      next.unshift(element);
-
-      return next;
-    });
-  };
+  const boardId = 5;
+  useBoardSocket(boardId, updateElements);
+  const {
+    bringForward,
+    sendBackward,
+    bringToFront,
+    sendToBack,
+    duplicateSelectedElement,
+  } = useElementActions({
+    updateElements,
+    elements,
+    selectedElementId,
+    setSelectedElementId,
+  });
   const value = {
     selectedTool,
     setSelectedTool,
