@@ -22,8 +22,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: "http://localhost:5173",
-        credentials: true
-    }
+        credentials: true,
+    },
 });
 
 io.on("connection", (socket) => {
@@ -34,26 +34,66 @@ io.on("connection", (socket) => {
 
         socket.join(`board-${boardId}`);
 
-        // Send confirmation to the user who joined
-        console.log("Sending joined-board");
+        socket.data.boardId = boardId;
 
-        setTimeout(() => {
-            console.log("Emitting joined-board");
-
-            socket.emit("joined-board", {
-                success: true,
-                boardId
-            });
-        }, 2000);
-
-        console.log("Sent");
-        socket.onAnyOutgoing((event, ...args) => {
-            console.log("Sent:", event, args);
+        socket.emit("joined-board", {
+            success: true,
+            boardId,
         });
 
-        // Notify everyone else in the room
         socket.to(`board-${boardId}`).emit("user-joined", {
-            socketId: socket.id
+            socketId: socket.id,
+        });
+    });
+
+    socket.on("element-created", (element) => {
+        const boardId = socket.data.boardId;
+        if (!boardId) return;
+        socket.to(`board-${boardId}`).emit("element-created", element);
+    })
+
+    socket.on("element-updated", (element) => {
+        const boardId = socket.data.boardId;
+
+        if (!boardId) return;
+
+        socket.to(`board-${boardId}`).emit("element-updated", element);
+    });
+
+    socket.on("element-deleted", (elementId) => {
+        const boardId = socket.data.boardId;
+
+        if (!boardId) return;
+
+        socket.to(`board-${boardId}`).emit("element-deleted", elementId);
+    });
+
+    socket.on("elements-replaced", (elements) => {
+        const boardId = socket.data.boardId;
+
+        if (!boardId) return;
+
+        socket.to(`board-${boardId}`).emit("elements-replaced", elements);
+    });
+
+    socket.on("element-selected", ({ elementId }) => {
+        const boardId = socket.data.boardId;
+
+        if (!boardId) return;
+
+        socket.to(`board-${boardId}`).emit("element-selected", {
+            socketId: socket.id,
+            elementId,
+        });
+    });
+
+    socket.on("element-deselected", () => {
+        const boardId = socket.data.boardId;
+
+        if (!boardId) return;
+
+        socket.to(`board-${boardId}`).emit("element-deselected", {
+            socketId: socket.id,
         });
     });
 

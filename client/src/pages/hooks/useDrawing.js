@@ -3,7 +3,7 @@ import { BoardContext } from '../../context/BoardContext';
 import { TOOLS } from '../../utils/constants';
 import elementRegistry from '../Board/elements/elementRegistry';
 import drawingRegistry from '../Board/elements/drawingRegistry';
-
+import { socket } from '../../socket';
 const useDrawing = () => {
   const { selectedTool,
     isDrawing, setIsDrawing,
@@ -109,6 +109,7 @@ const useDrawing = () => {
       }
 
       updateElements((prev) => [...prev, currentElement]);
+      socket.emit("element-created", currentElement);
     }
     setCurrentElement(null);
     setIsDrawing(false);

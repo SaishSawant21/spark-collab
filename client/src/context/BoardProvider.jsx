@@ -4,6 +4,7 @@ import { TOOLS } from "../utils/constants";
 import offsetElement from "../utils/offsetElement";
 import useElementActions from "./actions/elementActions";
 import useBoardSocket from "../pages/hooks/useBoardSocket";
+import { socket } from "../socket";
 const BoardProvider = ({ children }) => {
   const [selectedTool, setSelectedTool] = useState(TOOLS.SELECT);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -54,24 +55,38 @@ const BoardProvider = ({ children }) => {
 
   const undo = () => {
     if (undoStack.length === 0) return;
+
     setRedoStack((prev) => [
       ...prev,
-      structuredClone(elements)
+      structuredClone(elements),
     ]);
+
     const previousState = undoStack[undoStack.length - 1];
+
     setElements(previousState);
+
+    socket.emit("elements-replaced", previousState);
+
     setUndoStack((prev) => prev.slice(0, -1));
-  }
+  };
 
   const redo = () => {
     if (redoStack.length === 0) return;
+
     setUndoStack((prev) => [
-      ...prev, structuredClone(elements)
-    ])
+      ...prev,
+      structuredClone(elements),
+    ]);
+
     const nextState = redoStack[redoStack.length - 1];
+
     setElements(nextState);
+
+    socket.emit("elements-replaced", nextState);
+
     setRedoStack((prev) => prev.slice(0, -1));
-  }
+  };
+
   const boardId = 5;
   useBoardSocket(boardId, updateElements);
   const {

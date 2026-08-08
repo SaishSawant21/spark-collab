@@ -3,6 +3,7 @@ import { useContext } from "react";
 import { BoardContext } from "../../context/BoardContext";
 import { TOOLS } from "../../utils/constants";
 import PropertyField from "./PropertyField";
+import { socket } from "../../socket";
 
 const PropertiesPanel = ({ selectedElement }) => {
 	const { updateElements, bringForward, sendBackward, bringToFront, sendToBack } = useContext(BoardContext);
@@ -16,8 +17,8 @@ const PropertiesPanel = ({ selectedElement }) => {
 	const updateElementProperty = (property, value) => {
 		if (value == null) return;
 
-		updateElements((prev) =>
-			prev.map((element) => {
+		updateElements((prev) => {
+			const updatedElements = prev.map((element) => {
 				if (element.id !== selectedElement.id) return element;
 
 				return {
@@ -27,8 +28,16 @@ const PropertiesPanel = ({ selectedElement }) => {
 						[property]: value,
 					},
 				};
-			})
-		);
+			});
+
+			const updatedElement = updatedElements.find(
+				(element) => element.id === selectedElement.id
+			);
+
+			socket.emit("element-updated", updatedElement);
+
+			return updatedElements;
+		});
 	};
 
 	const updatePoint = (index, value) => {
