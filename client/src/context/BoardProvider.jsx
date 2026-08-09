@@ -87,8 +87,12 @@ const BoardProvider = ({ children }) => {
     setRedoStack((prev) => prev.slice(0, -1));
   };
 
+  const replaceElements = (updater) => {
+    setElements(updater);
+  };
+
   const boardId = 5;
-  useBoardSocket(boardId, updateElements);
+  useBoardSocket(boardId, updateElements, replaceElements);
   const {
     bringForward,
     sendBackward,
@@ -101,6 +105,7 @@ const BoardProvider = ({ children }) => {
     selectedElementId,
     setSelectedElementId,
   });
+
   const value = {
     selectedTool,
     setSelectedTool,
@@ -118,6 +123,7 @@ const BoardProvider = ({ children }) => {
     setSelectedElementId,
 
     updateElements,
+    replaceElements,
 
     undo,
 

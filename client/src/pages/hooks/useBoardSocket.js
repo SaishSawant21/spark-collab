@@ -3,7 +3,7 @@ import { socket } from "../../socket";
 import { BoardContext } from "../../context/BoardContext";
 import { useState } from "react";
 
-const useBoardSocket = (boardId, updateElements) => {
+const useBoardSocket = (boardId, updateElements, replaceElements) => {
   const [remoteSelections, setRemoteSelections] = useState({});
   useEffect(() => {
     if (!boardId) return;
@@ -22,11 +22,11 @@ const useBoardSocket = (boardId, updateElements) => {
     };
 
     const onElementCreated = (element) => {
-      updateElements((prev) => [...prev, element]);
+      replaceElements((prev) => [...prev, element]);
     };
 
     const onElementUpdated = (updatedElement) => {
-      updateElements((prev) =>
+      replaceElements((prev) =>
         prev.map((element) =>
           element.id === updatedElement.id
             ? updatedElement
@@ -36,13 +36,13 @@ const useBoardSocket = (boardId, updateElements) => {
     };
 
     const onElementDeleted = (elementId) => {
-      updateElements((prev) =>
+      replaceElements((prev) =>
         prev.filter((element) => element.id !== elementId)
       );
     };
 
     const onElementsReplaced = (elements) => {
-      updateElements(elements);
+      replaceElements(elements);
     };
 
     const onElementSelected = ({ socketId, elementId }) => {
@@ -64,6 +64,14 @@ const useBoardSocket = (boardId, updateElements) => {
       });
     };
 
+    const onUserDisconnected = ({ socketId }) => {
+      setRemoteSelections((prev) => {
+        const next = { ...prev };
+        delete next[socketId];
+        return next;
+      });
+    };
+
     socket.on("element-created", onElementCreated);
     socket.on("connect", onConnect);
     socket.on("joined-board", onJoinedBoard);
@@ -72,6 +80,7 @@ const useBoardSocket = (boardId, updateElements) => {
     socket.on("elements-replaced", onElementsReplaced);
     socket.on("element-selected", onElementSelected);
     socket.on("element-deselected", onElementDeselected);
+    socket.on("user-disconnected", onUserDisconnected);
     if (!socket.connected) {
       socket.connect();
     } else {
@@ -87,6 +96,7 @@ const useBoardSocket = (boardId, updateElements) => {
       socket.off("elements-replaced", onElementsReplaced);
       socket.off("element-selected", onElementSelected);
       socket.off("element-deselected", onElementDeselected);
+      socket.off("user-disconnected", onUserDisconnected);
     };
   }, [boardId, updateElements]);
 };
