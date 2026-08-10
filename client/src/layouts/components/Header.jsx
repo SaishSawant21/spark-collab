@@ -1,13 +1,23 @@
-import { Layout, Flex, Typography, Button, Avatar } from "antd";
+import { Layout, Flex, Typography, Button, Avatar, Dropdown } from "antd";
 import {
   DownloadOutlined,
   UserOutlined,
 } from "@ant-design/icons";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 
 const { Header } = Layout;
 const { Title } = Typography;
 
 const AppHeader = () => {
+  const { logout } = useContext(AuthContext);
+  const menuItem = [
+    {
+      key: "logout",
+      label: "Logout",
+      onClick: logout,
+    },
+  ]
   return (
     <Header className="!bg-white border-b border-slate-200 px-6">
       <Flex
@@ -36,10 +46,15 @@ const AppHeader = () => {
           >
             Export
           </Button>
-
-          <Avatar
-            icon={<UserOutlined />}
-          />
+          <Dropdown
+            menu={{ items: menuItem }}
+            trigger={["click"]}
+          >
+            <Avatar
+              className="cursor-pointer"
+              icon={<UserOutlined />}
+            />
+          </Dropdown>
         </Flex>
       </Flex>
     </Header>
