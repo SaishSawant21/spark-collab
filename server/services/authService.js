@@ -15,8 +15,17 @@ export const registerUser = async (username, email, password, avatar) => {
 
 export const loginUser = async (username, password) => {
 	const user = await checkUsername(username);
-	if (!user) throw createError('Invalid username or password.', 400);
+
+	if (!user) {
+		throw createError("Invalid username or password.", 400);
+	}
+
 	const checkPassword = await bcrypt.compare(password, user.password);
-	if (checkPassword) return user;
-}
+
+	if (!checkPassword) {
+		throw createError("Invalid username or password.", 400);
+	}
+
+	return user;
+};
 
