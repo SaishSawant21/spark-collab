@@ -4,7 +4,12 @@ import cookieParser from 'cookie-parser';
 import boardRoutes from './routes/boardRoutes.js';
 import boardElementRoutes from './routes/boardElementRoutes.js'
 import { errorHandler } from './middlewares/errorMiddleware.js';
+import cors from "cors";
 const app = express();
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true,
+}))
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
