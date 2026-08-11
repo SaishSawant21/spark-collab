@@ -5,29 +5,16 @@ import offsetElement from "../utils/offsetElement";
 import useElementActions from "./actions/elementActions";
 import useBoardSocket from "../pages/hooks/useBoardSocket";
 import { socket } from "../socket";
+import { useParams } from "react-router-dom";
 const BoardProvider = ({ children }) => {
   const [selectedTool, setSelectedTool] = useState(TOOLS.SELECT);
   const [isDrawing, setIsDrawing] = useState(false);
   const [currentElement, setCurrentElement] = useState(null);
-  const [elements, setElements] = useState([
-    {
-      id: 1,
-      element_type: "rectangle",
-      element_data: {
-        x: 100,
-        y: 100,
-        width: 200,
-        height: 100,
-        fill: "#fff",
-        stroke: "#000",
-        strokeWidth: 2
-      }
-    }
-  ]
-  );
+  const [elements, setElements] = useState([]);
   const [selectedElementId, setSelectedElementId] = useState(null);
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
+  const { boardId } = useParams();
 
   const saveHistory = useCallback(() => {
     setUndoStack((prev) => [
@@ -91,7 +78,6 @@ const BoardProvider = ({ children }) => {
     setElements(updater);
   };
 
-  const boardId = 5;
   useBoardSocket(boardId, updateElements, replaceElements);
   const {
     bringForward,
