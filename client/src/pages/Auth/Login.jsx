@@ -3,11 +3,12 @@ import { messageContants } from "../../utils/constants"
 import { useContext, useState } from "react"
 import { authenticateUser } from "../../services/authService";
 import { AuthContext } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
 	const [loading, setLoading] = useState(false);
 	const { setUser } = useContext(AuthContext);
-
+	const navigate = useNavigate();
 	const onSubmit = async (values) => {
 		try {
 			setLoading(true);
@@ -17,6 +18,7 @@ const Login = () => {
 				setUser({
 					username: values?.username
 				})
+				navigate('/board');
 			}
 		} catch (error) {
 			message.error(error?.response?.data?.message || messageContants.somethingWerntWrong);
