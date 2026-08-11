@@ -4,10 +4,7 @@ import { AuthContext } from "../context/AuthContext";
 
 const ProtectedRoute = () => {
   const { isAuthenticated, loading } = useContext(AuthContext);
-  console.log("ProtectedRoute:", {
-    isAuthenticated,
-    loading,
-  });
+
   if (loading) {
     return null;
   }
