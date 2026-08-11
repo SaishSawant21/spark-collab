@@ -1,11 +1,14 @@
 import AuthProvider from "./context/AuthProvider";
+import BoardsProvider from "./context/BoardsProvider";
 import AppRoutes from "./routes/AppRoutes";
 
 function App() {
 
   return (
     <AuthProvider>
-      <AppRoutes />
+      <BoardsProvider>
+        <AppRoutes />
+      </BoardsProvider>
     </AuthProvider>
   )
 }
