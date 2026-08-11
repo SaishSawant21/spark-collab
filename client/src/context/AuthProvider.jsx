@@ -4,10 +4,9 @@ import { fetchCurrentUser, logoutUser } from "../services/authService";
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const loadUser = async () => {
     try {
-      setLoading(true);
       const response = await fetchCurrentUser();
       setUser(response?.user || null);
     } catch (error) {
@@ -15,7 +14,7 @@ const AuthProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     loadUser();
