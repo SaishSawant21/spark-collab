@@ -4,6 +4,9 @@ import { TOOLS } from '../../utils/constants';
 import elementRegistry from '../Board/elements/elementRegistry';
 import drawingRegistry from '../Board/elements/drawingRegistry';
 import { socket } from '../../socket';
+import { addBoardElement } from '../../services/boardElementService';
+import { message } from 'antd';
+import { useParams } from 'react-router-dom';
 const useDrawing = () => {
   const { selectedTool,
     isDrawing, setIsDrawing,
@@ -11,7 +14,7 @@ const useDrawing = () => {
     setElements,
     updateElements
   } = useContext(BoardContext);
-
+  const { boardId } = useParams();
   const handleMouseDown = (e) => {
     if (!selectedTool) return;
     if (e.target !== e.target.getStage()) return;
@@ -97,7 +100,20 @@ const useDrawing = () => {
 
   }
 
-  const handleMouseUp = () => {
+  const addElement = async (boardId, currentElement) => {
+    try {
+      let payload = {
+        element_type: currentElement.element_type,
+        element_data: currentElement.element_data
+      }
+      return await addBoardElement(boardId, payload);
+
+    } catch (error) {
+      console.log("ERROR: ", error);
+      message.error(error.response.data.message);
+    }
+  }
+  const handleMouseUp = async () => {
     if (!isDrawing) return;
     if (currentElement) {
       const registryItem = elementRegistry[currentElement.element_type];
@@ -108,8 +124,18 @@ const useDrawing = () => {
         return;
       }
 
-      updateElements((prev) => [...prev, currentElement]);
-      socket.emit("element-created", currentElement);
+      const res = await addElement(boardId, currentElement);
+
+      if (res?.code === 201) {
+        const savedElement = res.element;
+
+        updateElements((prev) => [
+          ...prev,
+          savedElement
+        ]);
+
+        socket.emit("element-created", savedElement);
+      }
     }
     setCurrentElement(null);
     setIsDrawing(false);
