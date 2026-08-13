@@ -6,6 +6,8 @@ import useElementActions from "./actions/elementActions";
 import useBoardSocket from "../pages/hooks/useBoardSocket";
 import { socket } from "../socket";
 import { useParams } from "react-router-dom";
+import { fetchBoardElements } from "../services/boardElementService";
+import { useEffect } from "react";
 const BoardProvider = ({ children }) => {
   const [selectedTool, setSelectedTool] = useState(TOOLS.SELECT);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -14,7 +16,7 @@ const BoardProvider = ({ children }) => {
   const [selectedElementId, setSelectedElementId] = useState(null);
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
-  const { boardId } = useParams();
+  const { boardId } = useParams() || null;
 
   const saveHistory = useCallback(() => {
     setUndoStack((prev) => [
@@ -77,6 +79,26 @@ const BoardProvider = ({ children }) => {
   const replaceElements = (updater) => {
     setElements(updater);
   };
+
+  const loadBoardElements = async () => {
+    try {
+      const res = await fetchBoardElements(boardId);
+
+      if (res?.code === 200) {
+        setElements(res?.boardElements || []);
+        console.log(boardId)
+        console.log(res?.boardElements)
+      }
+    } catch (error) {
+      console.log("Failed to fetch board elements:", error);
+      setElements([]);
+    }
+  };
+
+  useEffect(() => {
+    if (!boardId) return;
+    loadBoardElements();
+  }, [boardId])
 
   useBoardSocket(boardId, updateElements, replaceElements);
   const {
