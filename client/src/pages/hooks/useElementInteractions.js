@@ -1,16 +1,19 @@
 import { useContext } from "react";
 import { BoardContext } from "../../context/BoardContext";
-import { TOOLS } from "../../utils/constants";
+import { messageContants, TOOLS } from "../../utils/constants";
 import applyTransform from "../../utils/applyTransform";
 import applyDrag from "../../utils/applyDrag";
 import { socket } from "../../socket";
-
+import { updateBoardElement } from "../../services/boardElementService";
+import { message } from "antd";
+import { saveBoardElement } from './../../services/boardElementService';
 const useElementInteractions = (element) => {
   const { selectedTool,
     setSelectedElementId,
     setElements,
     updateElements
   } = useContext(BoardContext);
+
   const handleSelect = (e) => {
     if (selectedTool !== TOOLS.SELECT) return;
 
@@ -22,18 +25,27 @@ const useElementInteractions = (element) => {
       elementId: element.id,
     });
   };
-  const handleDragEnd = (e) => {
+
+
+  const handleDragEnd = async (e) => {
     const updatedElement = applyDrag(element, e.target);
 
     updateElements((prev) =>
       prev.map((item) =>
-        item.id === updatedElement.id ? updatedElement : item
+        item.id === updatedElement.id
+          ? updatedElement
+          : item
       )
     );
-    socket.emit("element-updated", updatedElement);
-  };
 
-  const transformElement = (e) => {
+    try {
+      await saveBoardElement(updatedElement);
+      socket.emit("element-updated", updatedElement);
+    } catch (error) {
+      console.error("Failed to save element:", error);
+    }
+  };
+  const transformElement = async (e) => {
     const updatedElement = applyTransform(element, e.target);
 
     updateElements((prev) =>
@@ -41,7 +53,13 @@ const useElementInteractions = (element) => {
         item.id === updatedElement.id ? updatedElement : item
       )
     );
-    socket.emit("element-updated", updatedElement);
+
+    try {
+      await saveBoardElement(updatedElement);
+      socket.emit("element-updated", updatedElement);
+    } catch (error) {
+      console.error("Failed to save element:", error);
+    }
   };
 
   return {

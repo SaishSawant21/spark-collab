@@ -1,9 +1,10 @@
-import { Button, Collapse, ColorPicker, Form, InputNumber, Space, Typography } from "antd";
+import { Button, Collapse, ColorPicker, Form, InputNumber, message, Space, Typography } from "antd";
 import { useContext } from "react";
 import { BoardContext } from "../../context/BoardContext";
-import { TOOLS } from "../../utils/constants";
+import { messageContants, TOOLS } from "../../utils/constants";
 import PropertyField from "./PropertyField";
 import { socket } from "../../socket";
+import { saveBoardElement } from "../../services/boardElementService";
 
 const PropertiesPanel = ({ selectedElement }) => {
 	const { updateElements, bringForward, sendBackward, bringToFront, sendToBack } = useContext(BoardContext);
@@ -14,30 +15,36 @@ const PropertiesPanel = ({ selectedElement }) => {
 
 	const elementData = selectedElement.element_data;
 
-	const updateElementProperty = (property, value) => {
+	const updateElementProperty = async (property, value) => {
 		if (value == null) return;
 
-		updateElements((prev) => {
-			const updatedElements = prev.map((element) => {
-				if (element.id !== selectedElement.id) return element;
+		const updatedElement = {
+			...selectedElement,
+			element_data: {
+				...selectedElement.element_data,
+				[property]: value,
+			},
+		};
 
-				return {
-					...element,
-					element_data: {
-						...element.element_data,
-						[property]: value,
-					},
-				};
-			});
+		updateElements((prev) =>
+			prev.map((element) =>
+				element.id === selectedElement.id
+					? updatedElement
+					: element
+			)
+		);
 
-			const updatedElement = updatedElements.find(
-				(element) => element.id === selectedElement.id
+		try {
+			await saveBoardElement(updatedElement);
+			socket.emit("element-updated", updatedElement);
+		} catch (error) {
+			message.error(
+				error?.response?.data?.message ||
+				messageContants.somethingWerntWrong
 			);
 
-			socket.emit("element-updated", updatedElement);
-
-			return updatedElements;
-		});
+			console.log("Error:", error);
+		}
 	};
 
 	const updatePoint = (index, value) => {

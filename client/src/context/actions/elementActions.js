@@ -2,111 +2,165 @@ import { useContext } from "react";
 import { BoardContext } from "../BoardContext";
 import offsetElement from "../../utils/offsetElement";
 import { socket } from "../../socket";
+import { addBoardElement, saveBoardElement } from "../../services/boardElementService";
+import { message } from "antd";
+import { messageContants } from "../../utils/constants";
 
 const useElementActions = ({
-  updateElements,
-  elements,
-  selectedElementId,
-  setSelectedElementId,
+	updateElements,
+	elements,
+	selectedElementId,
+	setSelectedElementId,
 }) => {
-  const bringForward = (id) => {
-    updateElements((prev) => {
-      const index = prev.findIndex((element) => element.id === id);
 
-      if (index === -1 || index === prev.length - 1) {
-        return prev;
-      }
+	const exceptionHandling = async (updatedElement) => {
+		try {
+			await saveBoardElement(updatedElement);
+			socket.emit("element-updated", updatedElement);
+		} catch (error) {
+			message.error(
+				error?.response?.data?.message ||
+				messageContants.somethingWerntWrong
+			);
+			console.log("Error:", error);
+		}
+	}
 
-      const next = [...prev];
+	const bringForward = async (id) => {
+		const element = elements.find((item) => item.id === id);
+		if (!element) return;
 
-      [next[index], next[index + 1]] = [
-        next[index + 1],
-        next[index],
-      ];
+		const updatedElement = {
+			...element,
+			element_data: {
+				...element.element_data,
+				zIndex: (element.element_data.zIndex ?? 0) + 1,
+			},
+		};
 
-      socket.emit("elements-replaced", next);
+		updateElements((prev) =>
+			prev.map((item) =>
+				item.id === id ? updatedElement : item
+			)
+		);
+		exceptionHandling(updatedElement);
+	};
 
-      return next;
-    });
-  };
+	const sendBackward = async (id) => {
+		const element = elements.find((item) => item.id === id);
+		if (!element) return;
 
-  const sendBackward = (id) => {
-    updateElements((prev) => {
-      const index = prev.findIndex((element) => element.id === id);
+		const updatedElement = {
+			...element,
+			element_data: {
+				...element.element_data,
+				zIndex: Math.max(
+					-1,
+					(element.element_data.zIndex ?? 0) - 1
+				),
+			},
+		};
 
-      if (index <= 0) {
-        return prev;
-      }
+		updateElements((prev) =>
+			prev.map((item) =>
+				item.id === id ? updatedElement : item
+			)
+		);
+		exceptionHandling(updatedElement);
+	};
 
-      const next = [...prev];
+	const bringToFront = async (id) => {
+		const element = elements.find((item) => item.id === id);
+		if (!element) return;
 
-      [next[index], next[index - 1]] = [
-        next[index - 1],
-        next[index],
-      ];
+		const maxZIndex = Math.max(
+			...elements.map(
+				(item) => item.element_data?.zIndex ?? 0
+			)
+		);
 
-      socket.emit("elements-replaced", next);
+		const updatedElement = {
+			...element,
+			element_data: {
+				...element.element_data,
+				zIndex: maxZIndex + 1,
+			},
+		};
 
-      return next;
-    });
-  };
+		updateElements((prev) =>
+			prev.map((item) =>
+				item.id === id ? updatedElement : item
+			)
+		);
 
-  const bringToFront = (id) => {
-    updateElements((prev) => {
-      const index = prev.findIndex((element) => element.id === id);
+		exceptionHandling(updatedElement);
+	};
 
-      if (index === -1 || index === prev.length - 1) {
-        return prev;
-      }
+	const sendToBack = async (id) => {
+		const element = elements.find((item) => item.id === id);
+		if (!element) return;
 
-      const next = [...prev];
-      const [element] = next.splice(index, 1);
-      next.push(element);
-      socket.emit("elements-replaced", next);
+		const minZIndex = Math.min(
+			...elements.map(
+				(item) => item.element_data?.zIndex ?? 0
+			)
+		);
 
-      return next;
-    });
-  };
-  const sendToBack = (id) => {
-    updateElements((prev) => {
-      const index = prev.findIndex((element) => element.id === id);
+		const updatedElement = {
+			...element,
+			element_data: {
+				...element.element_data,
+				zIndex: minZIndex - 1 < -1 ? -1 : minZIndex - 1,
+			},
+		};
 
-      if (index <= 0) {
-        return prev;
-      }
+		updateElements((prev) =>
+			prev.map((item) =>
+				item.id === id ? updatedElement : item
+			)
+		);
+		exceptionHandling(updatedElement);
+	};
 
-      const next = [...prev];
-      const [element] = next.splice(index, 1);
+	const duplicateSelectedElement = async () => {
+		if (!selectedElementId) return;
 
-      next.unshift(element);
+		const selectedElement = elements.find(
+			(item) => item.id === selectedElementId
+		);
 
-      socket.emit("elements-replaced", next);
+		if (!selectedElement) return;
 
-      return next;
-    });
-  };
+		const clone = structuredClone(selectedElement);
 
-  const duplicateSelectedElement = () => {
-    if (!selectedElementId) return;
+		// Don't copy the database ID
+		delete clone.id;
 
-    const selectedElement = elements.find(
-      (item) => item.id === selectedElementId
-    );
+		const duplicatedElement = offsetElement(clone, 20, 20);
 
-    if (!selectedElement) return;
+		try {
+			const response = await addBoardElement(boardId, {
+				elementType: duplicatedElement.element_type,
+				elementData: duplicatedElement.element_data,
+			});
 
-    const clone = structuredClone(selectedElement);
-    clone.id = Date.now();
+			if (response?.code === 201) {
+				const savedElement = response.element;
 
-    const duplicatedElement = offsetElement(clone, 20, 20);
+				updateElements((prev) => [
+					...prev,
+					savedElement,
+				]);
 
-    updateElements((prev) => [...prev, duplicatedElement]);
+				socket.emit("element-created", savedElement);
 
-    socket.emit("element-created", duplicatedElement);
-
-    setSelectedElementId(duplicatedElement.id);
-  };
-  return { bringForward, sendBackward, bringToFront, sendToBack, duplicateSelectedElement };
+				setSelectedElementId(savedElement.id);
+			}
+		} catch (error) {
+			console.log("Error duplicating element:", error);
+		}
+	};
+	return { bringForward, sendBackward, bringToFront, sendToBack, duplicateSelectedElement };
 }
 
 export default useElementActions;
