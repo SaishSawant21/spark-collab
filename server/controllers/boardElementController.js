@@ -10,10 +10,11 @@ export const addBoardElement = async (req, res, next) => {
       elementType: element_type,
       elementData: element_data
     }
-    await addBoardElementService(elementContent);
+    const element = await addBoardElementService(elementContent);
     return res.status(201).json({
       code: 201,
-      message: 'Element created successfully'
+      message: 'Element created successfully',
+      element
     })
   } catch (error) {
     next(error);
