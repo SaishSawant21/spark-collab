@@ -69,19 +69,30 @@ const Canvas = () => {
 				<Layer>
 					<Transformer ref={transformerRef} rotateEnabled={false} />
 					{
-						elements.map((element) => {
-							const Component = elementRegistry[element?.element_type].component;
-							return Component ? <Component key={element?.id}
-								element={element}
-								ref={(node) => {
-									if (node) {
-										elementRefs.current[element.id] = node;
-									} else {
-										delete elementRefs.current[element.id];
-									}
-								}}
-							/> : <></>
-						})
+						[...elements]
+							.sort(
+								(a, b) =>
+									(a.element_data?.zIndex ?? 0) -
+									(b.element_data?.zIndex ?? 0)
+							)
+							.map((element) => {
+								const Component =
+									elementRegistry[element?.element_type]?.component;
+
+								return Component ? (
+									<Component
+										key={element.id}
+										element={element}
+										ref={(node) => {
+											if (node) {
+												elementRefs.current[element.id] = node;
+											} else {
+												delete elementRefs.current[element.id];
+											}
+										}}
+									/>
+								) : null;
+							})
 					}
 					{currentElement && renderCurrentElement(currentElement)}
 				</Layer>
