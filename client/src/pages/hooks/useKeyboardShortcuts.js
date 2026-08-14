@@ -1,13 +1,19 @@
 import { useCallback, useContext, useEffect } from "react";
 import { BoardContext } from "../../context/BoardContext";
 import { socket } from "./../../socket";
+import { deleteBoardElement } from "../../services/boardElementService";
+import { useParams } from "react-router-dom";
+import { message } from "antd";
+import { messageContants } from "../../utils/constants";
 const useKeyboardShortcuts = () => {
   const { undo, redo,
     selectedElementId, setSelectedElementId,
     updateElements,
     duplicateSelectedElement
   } = useContext(BoardContext);
-  const handleKeyDown = useCallback((e) => {
+  const { boardId } = useParams();
+
+  const handleKeyDown = useCallback(async (e) => {
     if (e.ctrlKey && e.key.toLowerCase() === "z" && !e.shiftKey) {
       e.preventDefault();
       undo();
@@ -17,13 +23,26 @@ const useKeyboardShortcuts = () => {
     } else if (e.key === "Delete" && selectedElementId) {
       e.preventDefault();
       const deletedElementId = selectedElementId;
+      try {
+        let payload = {
+          element_id: deletedElementId
+        }
+        await deleteBoardElement(boardId, payload);
 
-      updateElements((prev) =>
-        prev.filter((item) => item.id !== deletedElementId)
-      );
+        updateElements((prev) =>
+          prev.filter((item) => item.id !== deletedElementId)
+        );
 
-      socket.emit("element-deleted", deletedElementId);
-      setSelectedElementId(null);
+        socket.emit("element-deleted", deletedElementId);
+        setSelectedElementId(null);
+      } catch (error) {
+        message.error(
+          error?.response?.data?.message ||
+          messageContants.somethingWerntWrong
+        );
+
+        console.log("Error:", error);
+      }
     } else if (e.ctrlKey && e.key.toLowerCase() === "d") {
       e.preventDefault();
       duplicateSelectedElement();
