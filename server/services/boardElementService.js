@@ -1,4 +1,4 @@
-import { addBoardElementModel, deleteBoardElementModel, getBoardAllElementsModel, getBoardElementModel, updateBoardElementModel } from "../models/boardElementModel.js";
+import { addBoardElementModel, deleteBoardElementModel, getBoardAllElementsModel, getBoardElementModel, replaceBoardElementsModel, updateBoardElementModel } from "../models/boardElementModel.js";
 import { addBoardMemberModel, getBoardMemberModel } from "../models/boardModel.js";
 import { createError } from "../utils/createError.js";
 import { checkIfBoardExist } from "./boardHelper.js"
@@ -67,3 +67,29 @@ export const deleteBoardElementService = async (boardId, elementId, userId) => {
   }
   return await deleteBoardElementModel(elementId);
 }
+
+export const replaceBoardElementsService = async (
+  boardId,
+  userId,
+  elements
+) => {
+  const board = await checkIfBoardExist(boardId);
+
+  if (parseInt(board.owner_id) !== userId) {
+    const member = await getBoardMemberModel(boardId, userId);
+
+    if (!member) {
+      throw createError("Forbidden", 403);
+    }
+
+    if (member.role === "viewer") {
+      throw createError("Forbidden", 403);
+    }
+  }
+
+  if (!Array.isArray(elements)) {
+    throw createError("Elements must be an array", 400);
+  }
+
+  return replaceBoardElementsModel(boardId, elements);
+};

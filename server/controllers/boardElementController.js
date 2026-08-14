@@ -1,4 +1,4 @@
-import { addBoardElementService, deleteBoardElementService, getBoardElementService, updateBoardElementService } from "../services/boardElementService.js";
+import { addBoardElementService, deleteBoardElementService, getBoardElementService, replaceBoardElementsService, updateBoardElementService } from "../services/boardElementService.js";
 import { deleteBoardService } from "../services/boardService.js";
 
 export const addBoardElement = async (req, res, next) => {
@@ -73,3 +73,24 @@ export const deleteBoardElement = async (req, res, next) => {
     next(error);
   }
 }
+
+export const replaceBoardElements = async (req, res, next) => {
+  try {
+    const { boardId } = req.params;
+    const { elements } = req.body;
+
+    const result = await replaceBoardElementsService(
+      boardId,
+      req.user.id,
+      elements
+    );
+
+    res.status(200).json({
+      code: 200,
+      message: "Board elements updated successfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
