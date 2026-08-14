@@ -1,13 +1,14 @@
 import { useCallback, useState } from "react";
 import { BoardContext } from "./BoardContext";
-import { TOOLS } from "../utils/constants";
+import { messageContants, TOOLS } from "../utils/constants";
 import offsetElement from "../utils/offsetElement";
 import useElementActions from "./actions/elementActions";
 import useBoardSocket from "../pages/hooks/useBoardSocket";
 import { socket } from "../socket";
 import { useParams } from "react-router-dom";
-import { fetchBoardElements } from "../services/boardElementService";
+import { fetchBoardElements, replaceBoardElements } from "../services/boardElementService";
 import { useEffect } from "react";
+import { message } from "antd";
 const BoardProvider = ({ children }) => {
   const [selectedTool, setSelectedTool] = useState(TOOLS.SELECT);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -42,38 +43,59 @@ const BoardProvider = ({ children }) => {
     });
   }, []);
 
-  const undo = () => {
+  const undo = async () => {
     if (undoStack.length === 0) return;
-
-    setRedoStack((prev) => [
-      ...prev,
-      structuredClone(elements),
-    ]);
 
     const previousState = undoStack[undoStack.length - 1];
 
-    setElements(previousState);
+    try {
+      await replaceBoardElements(boardId, previousState);
 
-    socket.emit("elements-replaced", previousState);
+      setRedoStack((prev) => [
+        ...prev,
+        structuredClone(elements),
+      ]);
 
-    setUndoStack((prev) => prev.slice(0, -1));
+      setElements(previousState);
+
+      socket.emit("elements-replaced", previousState);
+
+      setUndoStack((prev) => prev.slice(0, -1));
+    } catch (error) {
+      console.log("Undo failed:", error);
+      message.error(
+        error?.response?.data?.message ||
+        messageContants.somethingWerntWrong
+      );
+    }
   };
 
-  const redo = () => {
+  const redo = async () => {
     if (redoStack.length === 0) return;
-
-    setUndoStack((prev) => [
-      ...prev,
-      structuredClone(elements),
-    ]);
 
     const nextState = redoStack[redoStack.length - 1];
 
-    setElements(nextState);
+    try {
+      await replaceBoardElements(boardId, nextState);
 
-    socket.emit("elements-replaced", nextState);
+      setUndoStack((prev) => [
+        ...prev,
+        structuredClone(elements),
+      ]);
 
-    setRedoStack((prev) => prev.slice(0, -1));
+      setElements(nextState);
+
+      socket.emit("elements-replaced", nextState);
+
+      setRedoStack((prev) => prev.slice(0, -1));
+    } catch (error) {
+      console.log("Redo failed:", error);
+
+      message.error(
+        error?.response?.data?.message ||
+        messageContants.somethingWerntWrong
+      );
+    }
   };
 
   const replaceElements = (updater) => {
