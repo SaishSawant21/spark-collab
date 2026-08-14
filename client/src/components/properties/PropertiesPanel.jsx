@@ -47,25 +47,38 @@ const PropertiesPanel = ({ selectedElement }) => {
 		}
 	};
 
-	const updatePoint = (index, value) => {
+	const updatePoint = async (index, value) => {
 		if (value == null) return;
 
+		const points = [...selectedElement.element_data.points];
+		points[index] = value;
+
+		const updatedElement = {
+			...selectedElement,
+			element_data: {
+				...selectedElement.element_data,
+				points,
+			},
+		};
+
 		updateElements((prev) =>
-			prev.map((element) => {
-				if (element.id !== selectedElement.id) return element;
-
-				const points = [...element.element_data.points];
-				points[index] = value;
-
-				return {
-					...element,
-					element_data: {
-						...element.element_data,
-						points,
-					},
-				};
-			})
+			prev.map((element) =>
+				element.id === selectedElement.id
+					? updatedElement
+					: element
+			)
 		);
+
+		try {
+			await saveBoardElement(updatedElement);
+			socket.emit("element-updated", updatedElement);
+		} catch (error) {
+			message.error(
+				error?.response?.data?.message ||
+				messageContants.somethingWerntWrong
+			);
+			console.log("Error:", error);
+		}
 	};
 
 	const renderGeometry = () => {
