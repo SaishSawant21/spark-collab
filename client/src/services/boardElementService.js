@@ -1,4 +1,4 @@
-import { fetchApi, submitApi, updateApi } from './api';
+import { deleteApi, fetchApi, submitApi, updateApi } from './api';
 const prefix = '/boards';
 export const fetchBoardElements = (boardId) => {
   return fetchApi(`${prefix}/${boardId}/elements`);
@@ -19,4 +19,22 @@ export const saveBoardElement = async (element) => {
   };
 
   return await updateBoardElement(element?.id, payload);
+};
+
+export const deleteBoardElement = async (boardId, payload) => {
+
+  const response = await deleteApi(
+    `${prefix}/${boardId}/elements`, payload
+  );
+
+  return response.data;
+};
+
+export const replaceBoardElements = async (boardId, elements) => {
+  const response = await updateApi(
+    `${prefix}/${boardId}/replace-elements`,
+    { elements }
+  );
+
+  return response.data;
 };
