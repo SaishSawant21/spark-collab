@@ -5,6 +5,7 @@ import BoardProvider from "../context/BoardProvider";
 import AppLayout from "../layouts/AppLayout";
 import ProtectedRoute from "./ProtectedRoutes";
 import BoardRedirect from "./BoardRedirect";
+import Dashboard from "../pages/Dashboard";
 
 const AppRoutes = () => {
   return (
@@ -13,6 +14,7 @@ const AppRoutes = () => {
         <Route path="/login" element={<Login />} />
         <Route element={<ProtectedRoute />}>
           <Route index element={<BoardRedirect />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route
             path="/board"
             element={
