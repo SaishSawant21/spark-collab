@@ -21,7 +21,7 @@ export const getBoardByIdService = async (ownerId, boardId) => {
 }
 
 export const updatedBoardService = async (boardId, ownerId, title, description, is_public) => {
-	const existingBoard = await checkIfBoardExist(ownerId, boardId);
+	const existingBoard = await checkIfBoardExist(boardId, ownerId);
 
 	const trimTitle = title?.trim() || existingBoard.title;
 	if (!trimTitle) throw createError('Title is compulsory', 400);
@@ -33,7 +33,7 @@ export const updatedBoardService = async (boardId, ownerId, title, description, 
 }
 
 export const deleteBoardService = async (ownerId, boardId) => {
-	await checkIfBoardExist(ownerId, boardId);
+	await checkIfBoardExist(boardId, ownerId);
 	return await deleteBoardModel(ownerId, boardId);
 }
 
