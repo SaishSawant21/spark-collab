@@ -8,7 +8,7 @@ const { Header, Content } = Layout;
 const AppLayout = ({ children }) => {
   return (
     <Layout className='h-screen'>
-      <AppHeader />
+      <AppHeader showBoardSelector={true} showExport={true} showZoom={true} />
       <Layout>
         <LeftSidebar />
         <Content className='bg-slate-500'>
