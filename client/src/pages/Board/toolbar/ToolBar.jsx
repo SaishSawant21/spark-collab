@@ -11,8 +11,6 @@ const Toolbar = () => {
 		selectedTool,
 		setSelectedTool,
 		setSelectedElementId,
-		undo,
-		redo,
 	} = useContext(BoardContext);
 
 	const handleToolSelect = (tool) => {
@@ -52,27 +50,6 @@ const Toolbar = () => {
 				);
 			})}
 
-			<div className="w-8 border-t border-slate-300 my-2" />
-
-			<Tooltip title="Undo" placement="right">
-				<Button
-					type="text"
-					size="large"
-					className="!w-10 !h-10"
-					icon={<UndoOutlined />}
-					onClick={undo}
-				/>
-			</Tooltip>
-
-			<Tooltip title="Redo" placement="right">
-				<Button
-					type="text"
-					size="large"
-					className="!w-10 !h-10"
-					icon={<RedoOutlined />}
-					onClick={redo}
-				/>
-			</Tooltip>
 		</Flex>
 	);
 };
