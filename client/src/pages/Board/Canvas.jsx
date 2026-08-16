@@ -9,13 +9,20 @@ import useSelection from '../hooks/useSelection';
 import useKeyboard from '../hooks/useKeyboard';
 import elementRegistry from './elements/elementRegistry';
 import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts';
+import { TOOLS } from '../../utils/constants';
+import { getCanvasCursor, getZoomedStagePosition } from '../../utils/canvasUtils';
 
 const Canvas = () => {
 	const { currentElement,
 		elements,
+		scale,
+		stagePosition,
+		selectedTool,
+		setScale,
+		setStagePosition
 	} = useContext(BoardContext);
 	const containerRef = useRef(null);
-
+	const stageRef = useRef(null);
 	const [stageSize, setStageSize] = useState({
 		width: 0,
 		height: 0,
@@ -34,7 +41,39 @@ const Canvas = () => {
 		const Component = elementRegistry[elementData.element_type].component;
 		return Component ? <Component element={elementData} /> : <></>;
 	}
+	const handleWheel = (e) => {
+		e.evt.preventDefault();
 
+		const stage = e.target.getStage();
+
+		const oldScale = scale;
+
+		const scaleBy = 1.05;
+
+		let newScale;
+
+		if (e.evt.deltaY < 0) {
+			newScale = oldScale * scaleBy;
+		} else {
+			newScale = oldScale / scaleBy;
+		}
+
+		// Keep zoom within limits
+		newScale = Math.max(
+			0.2,
+			Math.min(3, newScale)
+		);
+
+		const newPosition =
+			getZoomedStagePosition(
+				stage,
+				newScale
+			);
+
+		setScale(newScale);
+
+		setStagePosition(newPosition);
+	};
 	useEffect(() => {
 		if (!containerRef.current) return;
 
@@ -56,16 +95,33 @@ const Canvas = () => {
 		<div
 			className='w-full h-full bg-slate-100'
 			ref={containerRef}
+			style={{
+				cursor: getCanvasCursor(selectedTool),
+			}}
 		>
 			<Stage
 				width={stageSize.width}
 				height={stageSize.height}
 				onMouseMove={handleMouseMove}
+				ref={stageRef}
 				onMouseDown={(e) => {
-					handleMouseDown(e)
-					handleStageDown(e)
+					if (e.evt.button === 1) {
+						e.evt.preventDefault();
+						handleMouseDown(e);
+						return;
+					}
+
+					handleMouseDown(e);
+					handleStageDown(e);
 				}}
-				onMouseUp={handleMouseUp}>
+				scaleX={scale}
+				scaleY={scale}
+				x={stagePosition.x}
+				y={stagePosition.y}
+				onMouseUp={handleMouseUp}
+				draggable={selectedTool === TOOLS.SELECT}
+				onWheel={handleWheel}
+			>
 				<Layer>
 					<Transformer ref={transformerRef} rotateEnabled={false} />
 					{
