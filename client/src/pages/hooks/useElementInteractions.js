@@ -1,17 +1,17 @@
 import { useContext } from "react";
 import { BoardContext } from "../../context/BoardContext";
-import { messageContants, TOOLS } from "../../utils/constants";
+import { TOOLS } from "../../utils/constants";
 import applyTransform from "../../utils/applyTransform";
 import applyDrag from "../../utils/applyDrag";
 import { socket } from "../../socket";
-import { updateBoardElement } from "../../services/boardElementService";
-import { message } from "antd";
-import { saveBoardElement } from './../../services/boardElementService';
+import { saveBoardElement } from "../../services/boardElementService";
+import { getCanvasCursor, setCanvasCursor } from "../../utils/canvasUtils";
+
 const useElementInteractions = (element) => {
-  const { selectedTool,
+  const {
+    selectedTool,
     setSelectedElementId,
-    setElements,
-    updateElements
+    updateElements,
   } = useContext(BoardContext);
 
   const handleSelect = (e) => {
@@ -19,6 +19,9 @@ const useElementInteractions = (element) => {
 
     e.cancelBubble = true;
 
+    const stage = e.target.getStage();
+
+    setCanvasCursor(stage, getCanvasCursor(selectedTool));
     setSelectedElementId(element.id);
 
     socket.emit("element-selected", {
@@ -26,9 +29,16 @@ const useElementInteractions = (element) => {
     });
   };
 
-
   const handleDragEnd = async (e) => {
-    const updatedElement = applyDrag(element, e.target);
+    const stage = e.target.getStage();
+
+    // Restore select cursor after dragging
+    setCanvasCursor(stage, "grab");
+
+    const updatedElement = applyDrag(
+      element,
+      e.target
+    );
 
     updateElements((prev) =>
       prev.map((item) =>
@@ -40,33 +50,60 @@ const useElementInteractions = (element) => {
 
     try {
       await saveBoardElement(updatedElement);
-      socket.emit("element-updated", updatedElement);
+
+      socket.emit(
+        "element-updated",
+        updatedElement
+      );
     } catch (error) {
-      console.error("Failed to save element:", error);
+      console.error(
+        "Failed to save element:",
+        error
+      );
     }
   };
+
   const transformElement = async (e) => {
-    const updatedElement = applyTransform(element, e.target);
+    const stage = e.target.getStage();
+
+    // Restore cursor after transformation
+    setCanvasCursor(stage, getCanvasCursor(selectedTool));
+    const updatedElement = applyTransform(
+      element,
+      e.target
+    );
 
     updateElements((prev) =>
       prev.map((item) =>
-        item.id === updatedElement.id ? updatedElement : item
+        item.id === updatedElement.id
+          ? updatedElement
+          : item
       )
     );
 
     try {
       await saveBoardElement(updatedElement);
-      socket.emit("element-updated", updatedElement);
+
+      socket.emit(
+        "element-updated",
+        updatedElement
+      );
     } catch (error) {
-      console.error("Failed to save element:", error);
+      console.error(
+        "Failed to save element:",
+        error
+      );
     }
   };
 
   return {
-    draggable: selectedTool === TOOLS.SELECT,
+    draggable:
+      selectedTool === TOOLS.SELECT,
+
     handleSelect,
     handleDragEnd,
-    transformElement
+    transformElement,
   };
-}
+};
+
 export default useElementInteractions;
