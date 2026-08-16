@@ -17,6 +17,12 @@ const BoardProvider = ({ children }) => {
   const [selectedElementId, setSelectedElementId] = useState(null);
   const [undoStack, setUndoStack] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
+  const [stagePosition, setStagePosition] = useState({
+    x: 0,
+    y: 0,
+  });
+  const [scale, setScale] = useState(1);
+  const [lastPointerPosition, setLastPointerPosition] = useState(null);
   const { boardId } = useParams() || null;
 
   const saveHistory = useCallback(() => {
@@ -108,13 +114,26 @@ const BoardProvider = ({ children }) => {
 
       if (res?.code === 200) {
         setElements(res?.boardElements || []);
-        console.log(boardId)
-        console.log(res?.boardElements)
       }
     } catch (error) {
       console.log("Failed to fetch board elements:", error);
       setElements([]);
     }
+  };
+  const zoomIn = () => {
+    setScale((prev) => Math.min(prev + 0.1, 3));
+  };
+
+  const zoomOut = () => {
+    setScale((prev) => Math.max(prev - 0.1, 0.1));
+  };
+
+  const resetView = () => {
+    setScale(1);
+    setStagePosition({
+      x: 0,
+      y: 0,
+    });
   };
 
   useEffect(() => {
@@ -163,7 +182,13 @@ const BoardProvider = ({ children }) => {
     bringForward,
     sendBackward,
     bringToFront,
-    sendToBack
+    sendToBack,
+    scale,
+    zoomIn,
+    zoomOut,
+    stagePosition,
+    setStagePosition,
+    resetView,
   };
 
   return (

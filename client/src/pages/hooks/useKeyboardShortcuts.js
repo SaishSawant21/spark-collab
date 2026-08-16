@@ -9,7 +9,8 @@ const useKeyboardShortcuts = () => {
   const { undo, redo,
     selectedElementId, setSelectedElementId,
     updateElements,
-    duplicateSelectedElement
+    duplicateSelectedElement,
+    zoomIn, zoomOut
   } = useContext(BoardContext);
   const { boardId } = useParams();
 
@@ -49,6 +50,12 @@ const useKeyboardShortcuts = () => {
     } else if (e.key === "Escape") {
       setSelectedElementId(null);
       socket.emit("element-deselected");
+    } else if (e.ctrlKey && (e.key === "+" || e.key === "=")) {
+      e.preventDefault();
+      zoomIn();
+    } else if (e.ctrlKey && e.key === "-") {
+      e.preventDefault();
+      zoomOut();
     }
   }, [undo, redo, updateElements, selectedElementId])
   useEffect(() => {
