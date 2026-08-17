@@ -11,3 +11,7 @@ export const fetchCurrentUser = () => {
 export const logoutUser = () => {
   return fetchApi(`${prefix}/logout`)
 }
+
+export const registerUser = async (payload) => {
+  return await submitApi(`${prefix}/register`, payload);
+};
