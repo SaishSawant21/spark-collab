@@ -6,12 +6,14 @@ import AppLayout from "../layouts/AppLayout";
 import ProtectedRoute from "./ProtectedRoutes";
 import BoardRedirect from "./BoardRedirect";
 import Dashboard from "../pages/Dashboard";
+import Registration from "../pages/Auth/Registration";
 
 const AppRoutes = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/registration" element={<Registration />} />
         <Route element={<ProtectedRoute />}>
           <Route index element={<BoardRedirect />} />
           <Route path="/dashboard" element={<Dashboard />} />
