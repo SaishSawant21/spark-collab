@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { BoardContext } from "./BoardContext";
 import { messageContants, TOOLS } from "../utils/constants";
 import offsetElement from "../utils/offsetElement";
@@ -24,7 +24,7 @@ const BoardProvider = ({ children }) => {
   const [scale, setScale] = useState(1);
   const [lastPointerPosition, setLastPointerPosition] = useState(null);
   const { boardId } = useParams() || null;
-
+  const stageRef = useRef(null);
   const saveHistory = useCallback(() => {
     setUndoStack((prev) => [
       ...prev,
@@ -189,6 +189,7 @@ const BoardProvider = ({ children }) => {
     stagePosition,
     setStagePosition,
     resetView,
+    stageRef
   };
 
   return (
