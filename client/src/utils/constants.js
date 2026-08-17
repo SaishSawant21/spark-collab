@@ -10,5 +10,6 @@ export const TOOLS = {
 export const messageContants = {
   requiredMsg: 'This field is required',
   invalidCredentials: "Invalid username or password.",
-  somethingWerntWrong: "Something went wrong. Please try again after sometime"
+  somethingWerntWrong: "Something went wrong. Please try again after sometime",
+  InavlidEmail: 'Invalid email format'
 }
