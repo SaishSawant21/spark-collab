@@ -7,6 +7,8 @@ import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { BoardsContext } from "../../context/BoardsContext";
 import { useNavigate, useParams } from "react-router-dom";
+import { exportCanvas } from "../../utils/canvasUtils";
+import { BoardContext } from "../../context/BoardContext";
 
 const { Header } = Layout;
 const { Title } = Typography;
@@ -18,6 +20,7 @@ const AppHeader = ({
 }) => {
   const { logout } = useContext(AuthContext);
   const { boards, loading } = useContext(BoardsContext);
+  const { stageRef, elements } = useContext(BoardContext);
   const navigate = useNavigate();
   const { boardId } = useParams();
 
@@ -75,6 +78,7 @@ const AppHeader = ({
             <Button
               type="primary"
               icon={<DownloadOutlined />}
+              onClick={() => exportCanvas(stageRef.current, elements)}
             >
               Export
             </Button>
