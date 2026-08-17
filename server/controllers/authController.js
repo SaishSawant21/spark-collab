@@ -8,9 +8,9 @@ export const register = async (req, res, next) => {
 		const { username, email, password, avatar } = req.body;
 		const user = await registerUser(username, email, password, avatar);
 		if (user) {
-			res.status(200).json({
-				code: 200,
-				message: 'User registered successfully'
+			res.status(201).json({
+				code: 201,
+				message: 'Registration successful. Please log in to continue.'
 			});
 		}
 	} catch (e) {
