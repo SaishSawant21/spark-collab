@@ -19,10 +19,10 @@ const Canvas = () => {
 		stagePosition,
 		selectedTool,
 		setScale,
-		setStagePosition
+		setStagePosition,
+		stageRef
 	} = useContext(BoardContext);
 	const containerRef = useRef(null);
-	const stageRef = useRef(null);
 	const [stageSize, setStageSize] = useState({
 		width: 0,
 		height: 0,
