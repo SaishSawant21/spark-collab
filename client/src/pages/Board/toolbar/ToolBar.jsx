@@ -25,11 +25,12 @@ const Toolbar = () => {
 		<Flex
 			vertical
 			align="center"
-			gap={12}
-			className="py-4"
+			gap={8}
+			className="h-full py-4"
 		>
 			{TOOL_LIST.map((tool) => {
 				const Icon = tool.icon;
+				const isSelected = selectedTool === tool.key;
 
 				return (
 					<Tooltip
@@ -38,18 +39,30 @@ const Toolbar = () => {
 						title={tool.label}
 					>
 						<Button
-							type={selectedTool === tool.key ? "primary" : "text"}
-							shape="default"
+							type="text"
 							size="large"
-							className="!w-12 !h-12 rounded-xl flex items-center justify-center"
 							onClick={() => handleToolSelect(tool.key)}
+							className={`
+						!flex
+						!h-11
+						!w-11
+						!items-center
+						!justify-center
+						!rounded-xl
+						!border
+						transition-all
+						duration-150
+						${isSelected
+									? "!border-emerald-200 !bg-emerald-50 !text-emerald-600 shadow-sm"
+									: "!border-transparent !text-slate-500 hover:!border-slate-200 hover:!bg-slate-50 hover:!text-emerald-600"
+								}
+					`}
 						>
-							<Icon size={22} />
+							<Icon size={21} strokeWidth={isSelected ? 2.2 : 1.8} />
 						</Button>
 					</Tooltip>
 				);
 			})}
-
 		</Flex>
 	);
 };

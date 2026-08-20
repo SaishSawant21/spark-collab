@@ -1,4 +1,13 @@
-import { Button, Collapse, ColorPicker, Form, InputNumber, message, Space, Typography } from "antd";
+import {
+	Button,
+	Collapse,
+	ColorPicker,
+	Flex,
+	InputNumber,
+	message,
+	Space,
+	Typography,
+} from "antd";
 import { useContext } from "react";
 import { BoardContext } from "../../context/BoardContext";
 import { messageContants, TOOLS } from "../../utils/constants";
@@ -7,13 +16,23 @@ import { socket } from "../../socket";
 import { saveBoardElement } from "../../services/boardElementService";
 
 const PropertiesPanel = ({ selectedElement }) => {
-	const { updateElements, bringForward, sendBackward, bringToFront, sendToBack } = useContext(BoardContext);
+	const {
+		updateElements,
+		bringForward,
+		sendBackward,
+		bringToFront,
+		sendToBack,
+	} = useContext(BoardContext);
 
 	if (!selectedElement) {
-		return <>Empty State</>;
+		return null;
 	}
 
 	const elementData = selectedElement.element_data;
+
+	const elementType =
+		selectedElement.element_type.charAt(0).toUpperCase() +
+		selectedElement.element_type.slice(1);
 
 	const updateElementProperty = async (property, value) => {
 		if (value == null) return;
@@ -77,129 +96,133 @@ const PropertiesPanel = ({ selectedElement }) => {
 				error?.response?.data?.message ||
 				messageContants.somethingWerntWrong
 			);
+
 			console.log("Error:", error);
 		}
 	};
+
+	const numberInput = (value, onChange, min = undefined, max = undefined) => (
+		<InputNumber
+			size="middle"
+			min={min}
+			max={max}
+			value={value}
+			onChange={onChange}
+			className="!w-full !rounded-lg"
+		/>
+	);
 
 	const renderGeometry = () => {
 		switch (selectedElement.element_type) {
 			case TOOLS.RECTANGLE:
 				return (
-					<Form layout="vertical">
+					<div className="grid grid-cols-2 gap-x-3">
 						<PropertyField label="X">
-							<InputNumber
-								value={elementData.x}
-								onChange={(value) =>
-									updateElementProperty("x", value)
-								}
-							/>
+							{numberInput(elementData.x, (value) =>
+								updateElementProperty("x", value)
+							)}
 						</PropertyField>
 
 						<PropertyField label="Y">
-							<InputNumber
-								value={elementData.y}
-								onChange={(value) =>
-									updateElementProperty("y", value)
-								}
-							/>
+							{numberInput(elementData.y, (value) =>
+								updateElementProperty("y", value)
+							)}
 						</PropertyField>
 
 						<PropertyField label="Width">
-							<InputNumber
-								min={1}
-								value={elementData.width}
-								onChange={(value) =>
-									updateElementProperty("width", value)
-								}
-							/>
+							{numberInput(
+								elementData.width,
+								(value) =>
+									updateElementProperty(
+										"width",
+										value
+									),
+								1
+							)}
 						</PropertyField>
 
 						<PropertyField label="Height">
-							<InputNumber
-								min={1}
-								value={elementData.height}
-								onChange={(value) =>
-									updateElementProperty("height", value)
-								}
-							/>
+							{numberInput(
+								elementData.height,
+								(value) =>
+									updateElementProperty(
+										"height",
+										value
+									),
+								1
+							)}
 						</PropertyField>
-					</Form>
+					</div>
 				);
 
 			case TOOLS.CIRCLE:
 				return (
-					<Form layout="vertical">
+					<div className="grid grid-cols-2 gap-x-3">
 						<PropertyField label="X">
-							<InputNumber
-								value={elementData.x}
-								onChange={(value) =>
-									updateElementProperty("x", value)
-								}
-							/>
+							{numberInput(elementData.x, (value) =>
+								updateElementProperty("x", value)
+							)}
 						</PropertyField>
 
 						<PropertyField label="Y">
-							<InputNumber
-								value={elementData.y}
-								onChange={(value) =>
-									updateElementProperty("y", value)
-								}
-							/>
+							{numberInput(elementData.y, (value) =>
+								updateElementProperty("y", value)
+							)}
 						</PropertyField>
 
 						<PropertyField label="Radius">
-							<InputNumber
-								min={1}
-								value={elementData.radius}
-								onChange={(value) =>
-									updateElementProperty("radius", value)
-								}
-							/>
+							{numberInput(
+								elementData.radius,
+								(value) =>
+									updateElementProperty(
+										"radius",
+										value
+									),
+								1
+							)}
 						</PropertyField>
-					</Form>
+					</div>
 				);
 
 			case TOOLS.ELLIPSE:
 				return (
-					<Form layout="vertical">
+					<div className="grid grid-cols-2 gap-x-3">
 						<PropertyField label="X">
-							<InputNumber
-								value={elementData.x}
-								onChange={(value) =>
-									updateElementProperty("x", value)
-								}
-							/>
+							{numberInput(elementData.x, (value) =>
+								updateElementProperty("x", value)
+							)}
 						</PropertyField>
 
 						<PropertyField label="Y">
-							<InputNumber
-								value={elementData.y}
-								onChange={(value) =>
-									updateElementProperty("y", value)
-								}
-							/>
+							{numberInput(elementData.y, (value) =>
+								updateElementProperty("y", value)
+							)}
 						</PropertyField>
 
 						<PropertyField label="Radius X">
-							<InputNumber
-								min={1}
-								value={elementData.radiusX}
-								onChange={(value) =>
-									updateElementProperty("radiusX", value)
-								}
-							/>
+							{numberInput(
+								elementData.radiusX,
+								(value) =>
+									updateElementProperty(
+										"radiusX",
+										value
+									),
+								1
+							)}
 						</PropertyField>
 
 						<PropertyField label="Radius Y">
-							<InputNumber
-								min={1}
-								value={elementData.radiusY}
-								onChange={(value) =>
-									updateElementProperty("radiusY", value)
-								}
-							/>
+							{numberInput(
+								elementData.radiusY,
+								(value) =>
+									updateElementProperty(
+										"radiusY",
+										value
+									),
+								1
+							)}
 						</PropertyField>
-					</Form>
+					</div>
 				);
 
 			case TOOLS.LINE:
@@ -207,35 +230,31 @@ const PropertiesPanel = ({ selectedElement }) => {
 				const [x1, y1, x2, y2] = elementData.points;
 
 				return (
-					<Form layout="vertical">
+					<div className="grid grid-cols-2 gap-x-3">
 						<PropertyField label="Start X">
-							<InputNumber
-								value={x1}
-								onChange={(value) => updatePoint(0, value)}
-							/>
+							{numberInput(x1, (value) =>
+								updatePoint(0, value)
+							)}
 						</PropertyField>
 
 						<PropertyField label="Start Y">
-							<InputNumber
-								value={y1}
-								onChange={(value) => updatePoint(1, value)}
-							/>
+							{numberInput(y1, (value) =>
+								updatePoint(1, value)
+							)}
 						</PropertyField>
 
 						<PropertyField label="End X">
-							<InputNumber
-								value={x2}
-								onChange={(value) => updatePoint(2, value)}
-							/>
+							{numberInput(x2, (value) =>
+								updatePoint(2, value)
+							)}
 						</PropertyField>
 
 						<PropertyField label="End Y">
-							<InputNumber
-								value={y2}
-								onChange={(value) => updatePoint(3, value)}
-							/>
+							{numberInput(y2, (value) =>
+								updatePoint(3, value)
+							)}
 						</PropertyField>
-					</Form>
+					</div>
 				);
 			}
 
@@ -243,113 +262,151 @@ const PropertiesPanel = ({ selectedElement }) => {
 				return null;
 		}
 	};
+
 	const renderArrange = () => {
 		return (
-			<Form layout="vertical">
-				<PropertyField>
-					<Space vertical>
-						<Button
-							block
-							onClick={() =>
-								bringForward(selectedElement.id)
-							}
-						>
-							Bring Forward
-						</Button>
-						<Button
-							block
-							onClick={() => sendBackward(selectedElement.id)}
-						>
-							Send Backward
-						</Button>
-						<Button
-							block
-							onClick={() => bringToFront(selectedElement.id)}
-						>
-							Bring To Front
-						</Button>
-						<Button
-							block
-							onClick={() => sendToBack(selectedElement.id)}
-						>
-							Send To Back
-						</Button>
-					</Space>
-				</PropertyField>
-			</Form>
+			<Space
+				direction="vertical"
+				size={8}
+				className="!flex !w-full"
+			>
+				<Button
+					block
+					onClick={() => bringForward(selectedElement.id)}
+					className="!h-9 !rounded-lg !text-sm !text-slate-600 hover:!border-emerald-300 hover:!text-emerald-600"
+				>
+					Bring Forward
+				</Button>
+
+				<Button
+					block
+					onClick={() => sendBackward(selectedElement.id)}
+					className="!h-9 !rounded-lg !text-sm !text-slate-600 hover:!border-emerald-300 hover:!text-emerald-600"
+				>
+					Send Backward
+				</Button>
+
+				<Button
+					block
+					onClick={() => bringToFront(selectedElement.id)}
+					className="!h-9 !rounded-lg !text-sm !text-slate-600 hover:!border-emerald-300 hover:!text-emerald-600"
+				>
+					Bring To Front
+				</Button>
+
+				<Button
+					block
+					onClick={() => sendToBack(selectedElement.id)}
+					className="!h-9 !rounded-lg !text-sm !text-slate-600 hover:!border-emerald-300 hover:!text-emerald-600"
+				>
+					Send To Back
+				</Button>
+			</Space>
 		);
 	};
 
 	return (
-		<>
-			<Typography.Title level={5} className="!mb-3">
-				{selectedElement.element_type.charAt(0).toUpperCase() +
-					selectedElement.element_type.slice(1)}
-			</Typography.Title>
+		<div>
+			{/* Selected element */}
+			<div className="mb-4 flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
+				<div>
+					<Typography.Text className="!block !text-[11px] !font-medium !uppercase !tracking-wider !text-slate-400">
+						Selected
+					</Typography.Text>
 
+					<Typography.Text className="!text-sm !font-semibold !text-slate-700">
+						{elementType}
+					</Typography.Text>
+				</div>
+
+				<div className="flex h-8 w-8 items-center justify-center rounded-md bg-emerald-50">
+					<span className="text-sm font-semibold text-emerald-600">
+						✦
+					</span>
+				</div>
+			</div>
+
+			{/* Properties */}
 			<Collapse
-				// defaultActiveKey={["appearance", "geometry"]}
-				ghost
+				bordered={false}
+				defaultActiveKey={["appearance", "geometry"]}
+				className="!bg-transparent"
 				items={[
 					{
 						key: "appearance",
-						label: "Appearance",
+						label: (
+							<span className="font-medium text-slate-700">
+								Appearance
+							</span>
+						),
 						children: (
-							<Form layout="vertical">
+							<div className="space-y-1">
 								<PropertyField label="Fill">
-									<ColorPicker
-										value={elementData.fill}
-										onChange={(value) =>
-											updateElementProperty(
-												"fill",
-												value.toHexString()
-											)
-										}
-									/>
+									<Flex align="center" gap={8}>
+										<ColorPicker
+											value={elementData.fill}
+											onChange={(value) =>
+												updateElementProperty(
+													"fill",
+													value.toHexString()
+												)
+											}
+											showText
+										/>
+									</Flex>
 								</PropertyField>
 
 								<PropertyField label="Stroke">
-									<ColorPicker
-										value={elementData.stroke}
-										onChange={(value) =>
-											updateElementProperty(
-												"stroke",
-												value.toHexString()
-											)
-										}
-									/>
+									<Flex align="center" gap={8}>
+										<ColorPicker
+											value={elementData.stroke}
+											onChange={(value) =>
+												updateElementProperty(
+													"stroke",
+													value.toHexString()
+												)
+											}
+											showText
+										/>
+									</Flex>
 								</PropertyField>
 
 								<PropertyField label="Stroke Width">
-									<InputNumber
-										min={1}
-										max={20}
-										value={elementData.strokeWidth}
-										onChange={(value) =>
+									{numberInput(
+										elementData.strokeWidth,
+										(value) =>
 											updateElementProperty(
 												"strokeWidth",
 												value
-											)
-										}
-									/>
+											),
+										1,
+										20
+									)}
 								</PropertyField>
-							</Form>
+							</div>
 						),
 					},
 					{
 						key: "geometry",
-						label: "Geometry",
+						label: (
+							<span className="font-medium text-slate-700">
+								Geometry
+							</span>
+						),
 						children: renderGeometry(),
 					},
 					{
 						key: "arrange",
-						label: "Arrange",
+						label: (
+							<span className="font-medium text-slate-700">
+								Arrange
+							</span>
+						),
 						children: renderArrange(),
-					}
+					},
 				]}
 			/>
-		</>
+		</div>
 	);
 };
-
 export default PropertiesPanel;
