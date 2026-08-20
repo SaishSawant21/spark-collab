@@ -7,6 +7,7 @@ import ProtectedRoute from "./ProtectedRoutes";
 import BoardRedirect from "./BoardRedirect";
 import Dashboard from "../pages/Dashboard";
 import Registration from "../pages/Auth/Registration";
+import ProfileUpdate from "../pages/Auth/ProfileUpdate";
 
 const AppRoutes = () => {
   return (
@@ -17,6 +18,7 @@ const AppRoutes = () => {
         <Route element={<ProtectedRoute />}>
           <Route index element={<BoardRedirect />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/profile-update" element={<ProfileUpdate />} />
           <Route
             path="/board"
             element={

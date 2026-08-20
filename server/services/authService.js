@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { checkEmail, checkUsername, createUser } from '../models/userModel.js';
+import { checkEmail, checkUsername, createUser, getUserByIdModel, updateProfileModel } from '../models/userModel.js';
 import { createError } from '../utils/createError.js';
 
 const saltRounds = 10;
@@ -29,3 +29,22 @@ export const loginUser = async (username, password) => {
 	return user;
 };
 
+export const getProfileService = async (userId) => {
+	return await getUserByIdModel(userId);
+}
+
+export const updateProfileService = async (userData) => {
+	const dbData = await getUserByIdModel(userData.userId);
+	let { username, email, password } = userData;
+	if (!dbData) {
+		throw new Error('User not found');
+	}
+	username = username || dbData.username;
+	email = email || dbData.email;
+	password = password;
+	if (password) {
+		const saltRounds = 10;
+		password = await bcrypt.hash(userData.password, saltRounds);
+	}
+	return await updateProfileModel(userData.userId, username, email, password);
+}

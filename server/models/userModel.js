@@ -41,3 +41,24 @@ export const getUserByIdModel = async (userId) => {
          WHERE id=$1`, [userId]);
     return result.rows[0];
 }
+export const updateProfileModel = async (userId, username, email, password = null) => {
+    const fields = ['username = $1', 'email = $2'];
+    const values = [username, email];
+
+    // Only update password if a value is provided
+    if (password) {
+        values.push(password);
+        fields.push(`password = $${values.length}`);
+    }
+
+    // Add userId as the final parameter for WHERE clause
+    values.push(userId);
+    const query = `
+    UPDATE users 
+    SET ${fields.join(', ')} 
+    WHERE id = $${values.length} 
+    RETURNING *`;
+
+    const result = await db.query(query, values);
+    return result.rows[0];
+};
