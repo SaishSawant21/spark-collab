@@ -1,33 +1,20 @@
 import { Layout } from "antd";
-import LeftSidebar from "./components/LeftSidebar";
-import RightSidebar from "./components/RightSidebar";
+import { Outlet } from "react-router-dom";
 import AppHeader from "./components/Header";
 import AppFooter from "./components/Footer";
 
 const { Content } = Layout;
 
-const AppLayout = ({ children }) => {
+const AppLayout = () => {
 	return (
-		<Layout className="h-screen overflow-hidden">
-			<AppHeader
-				showBoardSelector={true}
-				showExport={true}
-				showZoom={true}
-			/>
+		<Layout className="min-h-screen !bg-slate-50">
+			<AppHeader />
 
-			<Layout className="flex-1 min-h-0">
-				<LeftSidebar />
+			<Content className="min-h-0 flex-1 !bg-slate-50">
+				<Outlet />
+			</Content>
 
-				<Layout className="min-w-0 min-h-0">
-					<Content className="min-h-0 overflow-hidden bg-slate-500">
-						{children}
-					</Content>
-
-					<AppFooter />
-				</Layout>
-
-				<RightSidebar />
-			</Layout>
+			<AppFooter />
 		</Layout>
 	);
 };
