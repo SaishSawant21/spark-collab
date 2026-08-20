@@ -10,213 +10,223 @@ import { useParams } from "react-router-dom";
 import { getCanvasPosition } from "../../utils/canvasUtils";
 
 const useDrawing = () => {
-  const {
-    selectedTool,
-    isDrawing,
-    setIsDrawing,
-    currentElement,
-    setCurrentElement,
-    updateElements,
-  } = useContext(BoardContext);
+	const {
+		selectedTool,
+		isDrawing,
+		setIsDrawing,
+		currentElement,
+		setCurrentElement,
+		updateElements,
+	} = useContext(BoardContext);
 
-  const { boardId } = useParams();
+	const { boardId } = useParams();
 
-  const handleMouseDown = (e) => {
-    const stage = e.target.getStage();
+	const handleMouseDown = (e) => {
+		const stage = e.target.getStage();
+		// No drawing tool selected
+		if (!selectedTool) return;
 
-    // No drawing tool selected
-    if (!selectedTool) return;
+		// Only start drawing when clicking directly on the Stage
+		if (e.target !== stage) return;
 
-    // Only start drawing when clicking directly on the Stage
-    if (e.target !== stage) return;
+		// Convert screen position to canvas/world position
+		const position = getCanvasPosition(stage);
 
-    // Convert screen position to canvas/world position
-    const position = getCanvasPosition(stage);
+		if (selectedTool === TOOLS.TEXT) {
+			setIsDrawing(true);
+			setCurrentElement(
+				drawingRegistry.text(position)
+			);
 
-    setIsDrawing(true);
+			return;
+		}
 
-    if (selectedTool === TOOLS.RECTANGLE) {
-      setCurrentElement(
-        drawingRegistry.rectangle(position)
-      );
-    } else if (
-      selectedTool === TOOLS.LINE ||
-      selectedTool === TOOLS.ARROW
-    ) {
-      setCurrentElement(
-        drawingRegistry.line(position, selectedTool)
-      );
-    } else if (selectedTool === TOOLS.CIRCLE) {
-      setCurrentElement(
-        drawingRegistry.circle(position)
-      );
-    } else if (selectedTool === TOOLS.ELLIPSE) {
-      setCurrentElement(
-        drawingRegistry.ellipse(position)
-      );
-    }
-  };
+		setIsDrawing(true);
 
-  const handleMouseMove = (e) => {
-    if (!selectedTool) return;
-    if (!isDrawing) return;
+		if (selectedTool === TOOLS.RECTANGLE) {
+			setCurrentElement(
+				drawingRegistry.rectangle(position)
+			);
+		} else if (
+			selectedTool === TOOLS.LINE ||
+			selectedTool === TOOLS.ARROW
+		) {
+			setCurrentElement(
+				drawingRegistry.line(position, selectedTool)
+			);
+		} else if (selectedTool === TOOLS.CIRCLE) {
+			setCurrentElement(
+				drawingRegistry.circle(position)
+			);
+		} else if (selectedTool === TOOLS.ELLIPSE) {
+			setCurrentElement(
+				drawingRegistry.ellipse(position)
+			);
+		}
+	};
 
-    const stage = e.target.getStage();
+	const handleMouseMove = (e) => {
+		if (!selectedTool) return;
+		if (!isDrawing) return;
 
-    // Convert screen position to canvas/world position
-    const position = getCanvasPosition(stage);
+		if (selectedTool === TOOLS.TEXT) {
+			return;
+		}
 
-    if (selectedTool === TOOLS.RECTANGLE) {
-      setCurrentElement((prev) => {
-        if (!prev) return null;
+		const stage = e.target.getStage();
 
-        return {
-          ...prev,
-          element_data: {
-            ...prev.element_data,
-            width:
-              position.x - prev.element_data.x,
-            height:
-              position.y - prev.element_data.y,
-          },
-        };
-      });
-    } else if (
-      selectedTool === TOOLS.LINE ||
-      selectedTool === TOOLS.ARROW
-    ) {
-      setCurrentElement((prev) => {
-        if (!prev) return null;
+		// Convert screen position to canvas/world position
+		const position = getCanvasPosition(stage);
 
-        return {
-          ...prev,
-          element_data: {
-            ...prev.element_data,
-            points: [
-              prev.element_data.points[0],
-              prev.element_data.points[1],
-              position.x,
-              position.y,
-            ],
-          },
-        };
-      });
-    } else if (selectedTool === TOOLS.CIRCLE) {
-      setCurrentElement((prev) => {
-        if (!prev) return null;
+		if (selectedTool === TOOLS.RECTANGLE) {
+			setCurrentElement((prev) => {
+				if (!prev) return null;
 
-        const dx =
-          position.x - prev.element_data.x;
+				return {
+					...prev,
+					element_data: {
+						...prev.element_data,
+						width:
+							position.x - prev.element_data.x,
+						height:
+							position.y - prev.element_data.y,
+					},
+				};
+			});
+		} else if (
+			selectedTool === TOOLS.LINE ||
+			selectedTool === TOOLS.ARROW
+		) {
+			setCurrentElement((prev) => {
+				if (!prev) return null;
 
-        const dy =
-          position.y - prev.element_data.y;
+				return {
+					...prev,
+					element_data: {
+						...prev.element_data,
+						points: [
+							prev.element_data.points[0],
+							prev.element_data.points[1],
+							position.x,
+							position.y,
+						],
+					},
+				};
+			});
+		} else if (selectedTool === TOOLS.CIRCLE) {
+			setCurrentElement((prev) => {
+				if (!prev) return null;
 
-        const radius = Math.hypot(dx, dy);
+				const dx =
+					position.x - prev.element_data.x;
 
-        return {
-          ...prev,
-          element_data: {
-            ...prev.element_data,
-            radius,
-          },
-        };
-      });
-    } else if (selectedTool === TOOLS.ELLIPSE) {
-      setCurrentElement((prev) => {
-        if (!prev) return null;
+				const dy =
+					position.y - prev.element_data.y;
 
-        const dx =
-          position.x - prev.element_data.x;
+				const radius = Math.hypot(dx, dy);
 
-        const dy =
-          position.y - prev.element_data.y;
+				return {
+					...prev,
+					element_data: {
+						...prev.element_data,
+						radius,
+					},
+				};
+			});
+		} else if (selectedTool === TOOLS.ELLIPSE) {
+			setCurrentElement((prev) => {
+				if (!prev) return null;
 
-        return {
-          ...prev,
-          element_data: {
-            ...prev.element_data,
-            radiusX: Math.abs(dx),
-            radiusY: Math.abs(dy),
-          },
-        };
-      });
-    }
-  };
+				const dx =
+					position.x - prev.element_data.x;
 
-  const addElement = async (
-    boardId,
-    currentElement
-  ) => {
-    try {
-      const payload = {
-        element_type:
-          currentElement.element_type,
+				const dy =
+					position.y - prev.element_data.y;
 
-        element_data:
-          currentElement.element_data,
-      };
+				return {
+					...prev,
+					element_data: {
+						...prev.element_data,
+						radiusX: Math.abs(dx),
+						radiusY: Math.abs(dy),
+					},
+				};
+			});
+		}
+	};
 
-      return await addBoardElement(
-        boardId,
-        payload
-      );
-    } catch (error) {
-      console.log("ERROR: ", error);
+	const addElement = async (
+		boardId,
+		currentElement
+	) => {
+		try {
+			const payload = {
+				element_type:
+					currentElement.element_type,
 
-      message.error(
-        error?.response?.data?.message ||
-        "Something went wrong"
-      );
-    }
-  };
+				element_data:
+					currentElement.element_data,
+			};
 
-  const handleMouseUp = async () => {
-    if (!isDrawing) return;
+			return await addBoardElement(
+				boardId,
+				payload
+			);
+		} catch (error) {
+			console.log("ERROR: ", error);
 
-    if (currentElement) {
-      const registryItem =
-        elementRegistry[
-        currentElement.element_type
-        ];
+			message.error(
+				error?.response?.data?.message ||
+				"Something went wrong"
+			);
+		}
+	};
 
-      if (
-        !registryItem.isValid(currentElement)
-      ) {
-        setCurrentElement(null);
-        setIsDrawing(false);
+	const handleMouseUp = async () => {
+		if (!isDrawing) return;
 
-        return;
-      }
+		if (currentElement) {
 
-      const res = await addElement(
-        boardId,
-        currentElement
-      );
+			const registryItem =
+				elementRegistry[currentElement.element_type];
 
-      if (res?.code === 201) {
-        const savedElement = res.element;
 
-        updateElements((prev) => [
-          ...prev,
-          savedElement,
-        ]);
+			if (!registryItem?.isValid(currentElement)) {
+				console.log("ELEMENT INVALID");
+				setCurrentElement(null);
+				setIsDrawing(false);
 
-        socket.emit(
-          "element-created",
-          savedElement
-        );
-      }
-    }
+				return;
+			}
 
-    setCurrentElement(null);
-    setIsDrawing(false);
-  };
+			const res = await addElement(
+				boardId,
+				currentElement
+			);
 
-  return {
-    handleMouseDown,
-    handleMouseMove,
-    handleMouseUp,
-  };
+			if (res?.code === 201) {
+				const savedElement = res.element;
+
+				updateElements((prev) => [
+					...prev,
+					savedElement,
+				]);
+
+				socket.emit(
+					"element-created",
+					savedElement
+				);
+			}
+		}
+
+		setCurrentElement(null);
+		setIsDrawing(false);
+	};
+
+	return {
+		handleMouseDown,
+		handleMouseMove,
+		handleMouseUp,
+	};
 };
-
 export default useDrawing;

@@ -5,6 +5,7 @@ const applyDrag = (element, node) => {
     case TOOLS.RECTANGLE:
     case TOOLS.CIRCLE:
     case TOOLS.ELLIPSE:
+    case TOOLS.TEXT:
       return {
         ...element,
         element_data: {

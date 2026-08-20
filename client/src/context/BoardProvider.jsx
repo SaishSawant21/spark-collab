@@ -23,6 +23,8 @@ const BoardProvider = ({ children }) => {
   });
   const [scale, setScale] = useState(1);
   const [lastPointerPosition, setLastPointerPosition] = useState(null);
+  const [editingTextId, setEditingTextId] = useState(null);
+  const [editingText, setEditingText] = useState("");
   const { boardId } = useParams() || null;
   const stageRef = useRef(null);
   const saveHistory = useCallback(() => {
@@ -189,7 +191,13 @@ const BoardProvider = ({ children }) => {
     stagePosition,
     setStagePosition,
     resetView,
-    stageRef
+    stageRef,
+
+    editingTextId,
+    setEditingTextId,
+
+    editingText,
+    setEditingText,
   };
 
   return (

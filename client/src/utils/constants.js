@@ -5,6 +5,7 @@ export const TOOLS = {
   CIRCLE: 'circle',
   ARROW: 'arrow',
   ELLIPSE: 'ellipse',
+  TEXT: 'text'
 }
 
 export const messageContants = {

@@ -1,3 +1,5 @@
+import { TOOLS } from "../../../utils/constants";
+
 const DEFAULT_STYLES = {
   fill: "#fff",
   stroke: "#000",
@@ -49,6 +51,18 @@ const drawingRegistry = {
       radiusX: 0,
       radiusY: 0,
       ...DEFAULT_STYLES,
+    },
+  }),
+  text: (position) => ({
+    id: Date.now(),
+    element_type: TOOLS.TEXT,
+    element_data: {
+      x: position.x,
+      y: position.y,
+      text: "Text",
+      fontSize: 20,
+      fill: "#000000",
+      width: 200,
     },
   }),
 };

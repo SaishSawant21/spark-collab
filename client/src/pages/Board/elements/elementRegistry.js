@@ -1,8 +1,10 @@
+import { TOOLS } from "../../../utils/constants";
 import ArrowElement from "./ArrowElement";
 import CircleElement from "./CircleElement";
 import EllipseElement from "./EllipseElement";
 import LineElement from "./LineElement";
 import Rectangle from "./Rectangle";
+import Text from "./Text";
 
 const elementRegistry = {
 	rectangle: {
@@ -41,6 +43,14 @@ const elementRegistry = {
 		isValid: (element) =>
 			element.element_data.radiusX > 5 &&
 			element.element_data.radiusY > 5,
-	}
+	},
+	[TOOLS.TEXT]: {
+		component: Text,
+		isValid: (element) => {
+			return Boolean(
+				element?.element_data?.text?.trim()
+			);
+		},
+	},
 };
 export default elementRegistry;
