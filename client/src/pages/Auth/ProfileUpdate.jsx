@@ -77,62 +77,199 @@ const ProfileUpdate = () => {
   }, []);
 
   return (
-    <Flex className="h-screen" justify="center" align="center">
-      <div className="w-96">
-        <Typography.Title level={2}>Profile</Typography.Title>
-
-        <Form form={form} onFinish={updateProfile} layout="vertical">
-          <Form.Item name="username" label="Username" rules={[requiredRule]}>
-            <Input placeholder="Username" />
-          </Form.Item>
-
-          <Form.Item
-            name="email"
-            label="Email"
-            rules={[
-              requiredRule,
-              {
-                type: "email",
-                message: messageContants.InavlidEmail,
-              },
-            ]}
+    <Flex
+      justify="center"
+      align="center"
+      className="min-h-screen bg-slate-50 px-4 py-8"
+    >
+      <div className="w-full max-w-2xl">
+        {/* Page Header */}
+        <div className="mb-6">
+          <Typography.Title
+            level={2}
+            className="!mb-1 !text-2xl !font-semibold !text-slate-900"
           >
-            <Input placeholder="Email" />
-          </Form.Item>
+            Profile
+          </Typography.Title>
 
-          <Form.Item name="password" label="Password">
-            <Input.Password placeholder="Password" />
-          </Form.Item>
+          <Typography.Text className="!text-slate-500">
+            Manage your account information and security
+          </Typography.Text>
+        </div>
 
-          <Form.Item
-            name="confirm_password"
-            label="Confirm Password"
-            dependencies={["password"]}
-            rules={[
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  const password = getFieldValue("password");
-
-                  if (password && !value) {
-                    return Promise.reject(new Error(messageContants.requiredMsg));
-                  }
-
-                  if (value && password !== value) {
-                    return Promise.reject(new Error("Passwords do not match"));
-                  }
-
-                  return Promise.resolve();
-                },
-              }),
-            ]}
+        {/* Profile Card */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
+          {/* Account Header */}
+          <Flex
+            align="center"
+            gap={14}
+            className="mb-7 rounded-xl bg-emerald-50 px-4 py-4"
           >
-            <Input.Password placeholder="Confirm Password" />
-          </Form.Item>
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-emerald-100">
+              <span className="text-lg font-semibold text-emerald-600">
+                ✦
+              </span>
+            </div>
 
-          <Button htmlType="submit" type="primary" block loading={loading}>
-            Save
-          </Button>
-        </Form>
+            <div>
+              <div className="font-semibold text-slate-800">
+                Account Information
+              </div>
+
+              <div className="text-sm text-slate-500">
+                Update your personal details below
+              </div>
+            </div>
+          </Flex>
+
+          <Form
+            form={form}
+            onFinish={updateProfile}
+            layout="vertical"
+            requiredMark={false}
+          >
+            {/* Account Details */}
+            <div className="mb-6">
+              <div className="mb-4 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                Account details
+              </div>
+
+              {/* Username + Email */}
+              <div className="grid grid-cols-1 gap-x-5 md:grid-cols-2">
+                <Form.Item
+                  name="username"
+                  label={
+                    <span className="font-medium text-slate-700">
+                      Username
+                    </span>
+                  }
+                  rules={[requiredRule]}
+                >
+                  <Input
+                    size="large"
+                    placeholder="Enter your username"
+                    className="!rounded-lg"
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="email"
+                  label={
+                    <span className="font-medium text-slate-700">
+                      Email
+                    </span>
+                  }
+                  rules={[
+                    requiredRule,
+                    {
+                      type: "email",
+                      message:
+                        messageContants.InavlidEmail,
+                    },
+                  ]}
+                >
+                  <Input
+                    size="large"
+                    placeholder="Enter your email"
+                    className="!rounded-lg"
+                  />
+                </Form.Item>
+              </div>
+            </div>
+
+            {/* Security */}
+            <div className="border-t border-slate-100 pt-6">
+              <div className="mb-4">
+                <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                  Security
+                </div>
+
+                <div className="mt-1 text-sm text-slate-500">
+                  Leave these fields empty if you don't want
+                  to change your password.
+                </div>
+              </div>
+
+              {/* Password + Confirm Password */}
+              <div className="grid grid-cols-1 gap-x-5 md:grid-cols-2">
+                <Form.Item
+                  name="password"
+                  label={
+                    <span className="font-medium text-slate-700">
+                      New Password
+                    </span>
+                  }
+                >
+                  <Input.Password
+                    size="large"
+                    placeholder="Enter new password"
+                    className="!rounded-lg"
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="confirm_password"
+                  label={
+                    <span className="font-medium text-slate-700">
+                      Confirm Password
+                    </span>
+                  }
+                  dependencies={["password"]}
+                  rules={[
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        const password =
+                          getFieldValue("password");
+
+                        if (password && !value) {
+                          return Promise.reject(
+                            new Error(
+                              messageContants.requiredMsg
+                            )
+                          );
+                        }
+
+                        if (
+                          value &&
+                          password !== value
+                        ) {
+                          return Promise.reject(
+                            new Error(
+                              "Passwords do not match"
+                            )
+                          );
+                        }
+
+                        return Promise.resolve();
+                      },
+                    }),
+                  ]}
+                >
+                  <Input.Password
+                    size="large"
+                    placeholder="Confirm new password"
+                    className="!rounded-lg"
+                  />
+                </Form.Item>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="mt-3 border-t border-slate-100 pt-5">
+              <Flex justify="end">
+                <Button
+                  htmlType="submit"
+                  type="primary"
+                  size="large"
+                  loading={loading}
+                  className="!h-11 !rounded-lg !border-emerald-600 !bg-emerald-600 !px-7 !font-medium hover:!border-emerald-700 hover:!bg-emerald-700"
+                >
+                  Save Changes
+                </Button>
+              </Flex>
+            </div>
+          </Form>
+        </div>
       </div>
     </Flex>
   );
