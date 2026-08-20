@@ -1,4 +1,4 @@
-import { Layout, Flex, Button, Tooltip } from "antd";
+import { Button, Flex, Layout, Tooltip } from "antd";
 import {
   UndoOutlined,
   RedoOutlined,
@@ -6,60 +6,80 @@ import {
   PlusOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
-import { useLocation } from "react-router-dom";
 import { useContext } from "react";
 import { BoardContext } from "../../context/BoardContext";
 
 const { Footer } = Layout;
 
-const AppFooter = () => {
-  const { pathname } = useLocation();
-  const { undo, redo,
-    scale, zoomIn, zoomOut,
-    resetView
+const CanvasFooter = () => {
+  const {
+    scale,
+    undo,
+    redo,
+    zoomIn,
+    zoomOut,
+    resetView,
   } = useContext(BoardContext);
-  const isCanvas = pathname.startsWith("/board/");
 
   return (
-    <Footer className="!bg-white !p-3 border-t border-slate-200">
-      {isCanvas ? (
-        <Flex justify="space-between" align="center">
-          <Flex gap={8}>
-            <Tooltip title={'Undo'}>
-              <Button icon={<UndoOutlined />} onClick={undo} />
-            </Tooltip>
-            <Tooltip title={'Redo'}>
-              <Button icon={<RedoOutlined />} onClick={redo} />
-            </Tooltip>
-          </Flex>
-
-          <Flex align="center" gap={8}>
-            <Button
-              icon={<MinusOutlined />}
-              onClick={zoomOut}
-            />
-
-            <span>{Math.round(scale * 100)}%</span>
-
-            <Button
-              icon={<PlusOutlined />}
-              onClick={zoomIn}
-            />
-            <Button onClick={resetView}>
-              Reset View
-            </Button>
-          </Flex>
-
+    <Flex justify="space-between" align="center" className="h-full">
+      {/* Undo / Redo */}
+      <Flex gap={8}>
+        <Tooltip title="Undo">
           <Button
-            danger
-            icon={<DeleteOutlined />}
-          >
-            Delete
-          </Button>
-        </Flex>
+            icon={<UndoOutlined />}
+            onClick={undo}
+          />
+        </Tooltip>
+
+        <Tooltip title="Redo">
+          <Button
+            icon={<RedoOutlined />}
+            onClick={redo}
+          />
+        </Tooltip>
+      </Flex>
+
+      {/* Zoom */}
+      <Flex align="center" gap={8}>
+        <Button
+          icon={<MinusOutlined />}
+          onClick={zoomOut}
+        />
+
+        <span className="min-w-12 text-center text-sm font-medium text-slate-600">
+          {Math.round(scale * 100)}%
+        </span>
+
+        <Button
+          icon={<PlusOutlined />}
+          onClick={zoomIn}
+        />
+
+        <Button onClick={resetView}>
+          Reset View
+        </Button>
+      </Flex>
+
+      {/* Delete */}
+      <Button
+        danger
+        icon={<DeleteOutlined />}
+      >
+        Delete
+      </Button>
+    </Flex>
+  );
+};
+
+const AppFooter = ({ isCanvas = false }) => {
+  return (
+    <Footer className="!border-t !border-slate-200 !bg-white !px-4 !py-3">
+      {isCanvas ? (
+        <CanvasFooter />
       ) : (
-        <Flex justify="center">
-          <span className="text-slate-500">
+        <Flex justify="center" align="center">
+          <span className="text-xs text-slate-400">
             © 2026 Spark Collab
           </span>
         </Flex>
@@ -67,4 +87,5 @@ const AppFooter = () => {
     </Footer>
   );
 };
+
 export default AppFooter;
