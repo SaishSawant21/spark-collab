@@ -125,14 +125,22 @@ const Canvas = () => {
 
 	return (
 		<div
-			className="relative w-full h-full bg-slate-100"
+			className="relative h-full w-full overflow-hidden bg-slate-50"
 			ref={containerRef}
 			style={{
-				cursor: getCanvasCursor(
-					selectedTool
-				),
+				cursor: getCanvasCursor(selectedTool),
 			}}
 		>
+			{/* Canvas background */}
+			<div
+				className="pointer-events-none absolute inset-0 opacity-60"
+				style={{
+					backgroundImage:
+						"radial-gradient(circle, #CBD5E1 1px, transparent 1px)",
+					backgroundSize: "24px 24px",
+				}}
+			/>
+
 			<Stage
 				width={stageSize.width}
 				height={stageSize.height}
@@ -153,9 +161,7 @@ const Canvas = () => {
 				x={stagePosition.x}
 				y={stagePosition.y}
 				onMouseUp={handleMouseUp}
-				draggable={
-					selectedTool === TOOLS.SELECT
-				}
+				draggable={selectedTool === TOOLS.SELECT}
 				onWheel={handleWheel}
 			>
 				<Layer>
@@ -163,13 +169,12 @@ const Canvas = () => {
 						ref={transformerRef}
 						rotateEnabled={false}
 					/>
+
 					{[...elements]
 						.sort(
 							(a, b) =>
-								(a.element_data?.zIndex ??
-									0) -
-								(b.element_data?.zIndex ??
-									0)
+								(a.element_data?.zIndex ?? 0) -
+								(b.element_data?.zIndex ?? 0)
 						)
 						.map((element) => {
 							const Component =
@@ -187,8 +192,7 @@ const Canvas = () => {
 												element.id
 											] = node;
 										} else {
-											delete elementRefs
-												.current[
+											delete elementRefs.current[
 												element.id
 											];
 										}
@@ -196,12 +200,12 @@ const Canvas = () => {
 								/>
 							) : null;
 						})}
+
 					{currentElement &&
-						renderCurrentElement(
-							currentElement
-						)}
+						renderCurrentElement(currentElement)}
 				</Layer>
 			</Stage>
+
 			<TextEditor />
 		</div>
 	);
