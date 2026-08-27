@@ -10,7 +10,10 @@ import {
 } from "antd";
 import { useContext } from "react";
 import { BoardContext } from "../../context/BoardContext";
-import { messageContants, TOOLS } from "../../utils/constants";
+import {
+	messageContants,
+	TOOLS,
+} from "../../utils/constants";
 import PropertyField from "./PropertyField";
 import { socket } from "../../socket";
 import { saveBoardElement } from "../../services/boardElementService";
@@ -34,7 +37,10 @@ const PropertiesPanel = ({ selectedElement }) => {
 		selectedElement.element_type.charAt(0).toUpperCase() +
 		selectedElement.element_type.slice(1);
 
-	const updateElementProperty = async (property, value) => {
+	const updateElementProperty = async (
+		property,
+		value
+	) => {
 		if (value == null) return;
 
 		const updatedElement = {
@@ -55,7 +61,11 @@ const PropertiesPanel = ({ selectedElement }) => {
 
 		try {
 			await saveBoardElement(updatedElement);
-			socket.emit("element-updated", updatedElement);
+
+			socket.emit(
+				"element-updated",
+				updatedElement
+			);
 		} catch (error) {
 			message.error(
 				error?.response?.data?.message ||
@@ -69,7 +79,10 @@ const PropertiesPanel = ({ selectedElement }) => {
 	const updatePoint = async (index, value) => {
 		if (value == null) return;
 
-		const points = [...selectedElement.element_data.points];
+		const points = [
+			...selectedElement.element_data.points,
+		];
+
 		points[index] = value;
 
 		const updatedElement = {
@@ -90,7 +103,10 @@ const PropertiesPanel = ({ selectedElement }) => {
 
 		try {
 			await saveBoardElement(updatedElement);
-			socket.emit("element-updated", updatedElement);
+			socket.emit(
+				"element-updated",
+				updatedElement
+			);
 		} catch (error) {
 			message.error(
 				error?.response?.data?.message ||
@@ -101,7 +117,12 @@ const PropertiesPanel = ({ selectedElement }) => {
 		}
 	};
 
-	const numberInput = (value, onChange, min = undefined, max = undefined) => (
+	const numberInput = (
+		value,
+		onChange,
+		min = undefined,
+		max = undefined
+	) => (
 		<InputNumber
 			size="middle"
 			min={min}
@@ -116,16 +137,26 @@ const PropertiesPanel = ({ selectedElement }) => {
 		switch (selectedElement.element_type) {
 			case TOOLS.RECTANGLE:
 				return (
-					<div className="grid grid-cols-2 gap-x-3">
+					<div className="grid grid-cols-2 gap-x-3 gap-y-1">
 						<PropertyField label="X">
-							{numberInput(elementData.x, (value) =>
-								updateElementProperty("x", value)
+							{numberInput(
+								elementData.x,
+								(value) =>
+									updateElementProperty(
+										"x",
+										value
+									)
 							)}
 						</PropertyField>
 
 						<PropertyField label="Y">
-							{numberInput(elementData.y, (value) =>
-								updateElementProperty("y", value)
+							{numberInput(
+								elementData.y,
+								(value) =>
+									updateElementProperty(
+										"y",
+										value
+									)
 							)}
 						</PropertyField>
 
@@ -157,16 +188,26 @@ const PropertiesPanel = ({ selectedElement }) => {
 
 			case TOOLS.CIRCLE:
 				return (
-					<div className="grid grid-cols-2 gap-x-3">
+					<div className="grid grid-cols-2 gap-x-3 gap-y-1">
 						<PropertyField label="X">
-							{numberInput(elementData.x, (value) =>
-								updateElementProperty("x", value)
+							{numberInput(
+								elementData.x,
+								(value) =>
+									updateElementProperty(
+										"x",
+										value
+									)
 							)}
 						</PropertyField>
 
 						<PropertyField label="Y">
-							{numberInput(elementData.y, (value) =>
-								updateElementProperty("y", value)
+							{numberInput(
+								elementData.y,
+								(value) =>
+									updateElementProperty(
+										"y",
+										value
+									)
 							)}
 						</PropertyField>
 
@@ -186,16 +227,26 @@ const PropertiesPanel = ({ selectedElement }) => {
 
 			case TOOLS.ELLIPSE:
 				return (
-					<div className="grid grid-cols-2 gap-x-3">
+					<div className="grid grid-cols-2 gap-x-3 gap-y-1">
 						<PropertyField label="X">
-							{numberInput(elementData.x, (value) =>
-								updateElementProperty("x", value)
+							{numberInput(
+								elementData.x,
+								(value) =>
+									updateElementProperty(
+										"x",
+										value
+									)
 							)}
 						</PropertyField>
 
 						<PropertyField label="Y">
-							{numberInput(elementData.y, (value) =>
-								updateElementProperty("y", value)
+							{numberInput(
+								elementData.y,
+								(value) =>
+									updateElementProperty(
+										"y",
+										value
+									)
 							)}
 						</PropertyField>
 
@@ -227,31 +278,56 @@ const PropertiesPanel = ({ selectedElement }) => {
 
 			case TOOLS.LINE:
 			case TOOLS.ARROW: {
-				const [x1, y1, x2, y2] = elementData.points;
+				const [
+					x1,
+					y1,
+					x2,
+					y2,
+				] = elementData.points;
 
 				return (
-					<div className="grid grid-cols-2 gap-x-3">
+					<div className="grid grid-cols-2 gap-x-3 gap-y-1">
 						<PropertyField label="Start X">
-							{numberInput(x1, (value) =>
-								updatePoint(0, value)
+							{numberInput(
+								x1,
+								(value) =>
+									updatePoint(
+										0,
+										value
+									)
 							)}
 						</PropertyField>
 
 						<PropertyField label="Start Y">
-							{numberInput(y1, (value) =>
-								updatePoint(1, value)
+							{numberInput(
+								y1,
+								(value) =>
+									updatePoint(
+										1,
+										value
+									)
 							)}
 						</PropertyField>
 
 						<PropertyField label="End X">
-							{numberInput(x2, (value) =>
-								updatePoint(2, value)
+							{numberInput(
+								x2,
+								(value) =>
+									updatePoint(
+										2,
+										value
+									)
 							)}
 						</PropertyField>
 
 						<PropertyField label="End Y">
-							{numberInput(y2, (value) =>
-								updatePoint(3, value)
+							{numberInput(
+								y2,
+								(value) =>
+									updatePoint(
+										3,
+										value
+									)
 							)}
 						</PropertyField>
 					</div>
@@ -265,52 +341,64 @@ const PropertiesPanel = ({ selectedElement }) => {
 
 	const renderArrange = () => {
 		return (
-			<Space
-				direction="vertical"
-				size={8}
-				className="!flex !w-full"
-			>
+			<div className="grid grid-cols-2 gap-2">
 				<Button
 					block
-					onClick={() => bringForward(selectedElement.id)}
-					className="!h-9 !rounded-lg !text-sm !text-slate-600 hover:!border-emerald-300 hover:!text-emerald-600"
+					onClick={() =>
+						bringForward(
+							selectedElement.id
+						)
+					}
+					className="!h-9 !rounded-lg !px-2 !text-xs !text-slate-600 hover:!border-emerald-300 hover:!text-emerald-600"
 				>
 					Bring Forward
 				</Button>
 
 				<Button
 					block
-					onClick={() => sendBackward(selectedElement.id)}
-					className="!h-9 !rounded-lg !text-sm !text-slate-600 hover:!border-emerald-300 hover:!text-emerald-600"
+					onClick={() =>
+						sendBackward(
+							selectedElement.id
+						)
+					}
+					className="!h-9 !rounded-lg !px-2 !text-xs !text-slate-600 hover:!border-emerald-300 hover:!text-emerald-600"
 				>
 					Send Backward
 				</Button>
 
 				<Button
 					block
-					onClick={() => bringToFront(selectedElement.id)}
-					className="!h-9 !rounded-lg !text-sm !text-slate-600 hover:!border-emerald-300 hover:!text-emerald-600"
+					onClick={() =>
+						bringToFront(
+							selectedElement.id
+						)
+					}
+					className="!h-9 !rounded-lg !px-2 !text-xs !text-slate-600 hover:!border-emerald-300 hover:!text-emerald-600"
 				>
 					Bring To Front
 				</Button>
 
 				<Button
 					block
-					onClick={() => sendToBack(selectedElement.id)}
-					className="!h-9 !rounded-lg !text-sm !text-slate-600 hover:!border-emerald-300 hover:!text-emerald-600"
+					onClick={() =>
+						sendToBack(
+							selectedElement.id
+						)
+					}
+					className="!h-9 !rounded-lg !px-2 !text-xs !text-slate-600 hover:!border-emerald-300 hover:!text-emerald-600"
 				>
 					Send To Back
 				</Button>
-			</Space>
+			</div>
 		);
 	};
 
 	return (
-		<div>
-			{/* Selected element */}
-			<div className="mb-4 flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
-				<div>
-					<Typography.Text className="!block !text-[11px] !font-medium !uppercase !tracking-wider !text-slate-400">
+		<div className="w-full">
+			{/* Selected Element */}
+			<div className="mb-3 flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
+				<div className="min-w-0">
+					<Typography.Text className="!block !text-[10px] !font-medium !uppercase !tracking-wider !text-slate-400">
 						Selected
 					</Typography.Text>
 
@@ -319,7 +407,7 @@ const PropertiesPanel = ({ selectedElement }) => {
 					</Typography.Text>
 				</div>
 
-				<div className="flex h-8 w-8 items-center justify-center rounded-md bg-emerald-50">
+				<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-emerald-50">
 					<span className="text-sm font-semibold text-emerald-600">
 						✦
 					</span>
@@ -329,7 +417,10 @@ const PropertiesPanel = ({ selectedElement }) => {
 			{/* Properties */}
 			<Collapse
 				bordered={false}
-				defaultActiveKey={["appearance", "geometry"]}
+				defaultActiveKey={[
+					"appearance",
+					"geometry",
+				]}
 				className="!bg-transparent"
 				items={[
 					{
@@ -342,10 +433,18 @@ const PropertiesPanel = ({ selectedElement }) => {
 						children: (
 							<div className="space-y-1">
 								<PropertyField label="Fill">
-									<Flex align="center" gap={8}>
+									<Flex
+										align="center"
+										gap={8}
+										className="w-full"
+									>
 										<ColorPicker
-											value={elementData.fill}
-											onChange={(value) =>
+											value={
+												elementData.fill
+											}
+											onChange={(
+												value
+											) =>
 												updateElementProperty(
 													"fill",
 													value.toHexString()
@@ -357,10 +456,18 @@ const PropertiesPanel = ({ selectedElement }) => {
 								</PropertyField>
 
 								<PropertyField label="Stroke">
-									<Flex align="center" gap={8}>
+									<Flex
+										align="center"
+										gap={8}
+										className="w-full"
+									>
 										<ColorPicker
-											value={elementData.stroke}
-											onChange={(value) =>
+											value={
+												elementData.stroke
+											}
+											onChange={(
+												value
+											) =>
 												updateElementProperty(
 													"stroke",
 													value.toHexString()

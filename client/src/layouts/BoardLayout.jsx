@@ -12,21 +12,24 @@ const BoardLayout = ({ children }) => {
 			<AppHeader
 				showBoardSelector={true}
 				showExport={true}
-				showZoom={true}
 			/>
 
-			<Layout className="flex-1 min-h-0">
-				<LeftSidebar />
-
-				<Layout className="min-w-0 min-h-0">
+			<Layout className="min-h-0 flex-1">
+				<div className="hidden md:block">
+					<LeftSidebar />
+				</div>
+				<Layout className="min-h-0 min-w-0">
 					<Content className="min-h-0 overflow-hidden bg-slate-500">
 						{children}
 					</Content>
 
-					<AppFooter isCanvas={true} />
+					<div className="hidden md:block">
+						<AppFooter isCanvas={true} />
+					</div>
 				</Layout>
-
-				<RightSidebar />
+				<div className="hidden md:block">
+					<RightSidebar />
+				</div>
 			</Layout>
 		</Layout>
 	);

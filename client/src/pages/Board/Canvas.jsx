@@ -1,6 +1,5 @@
-import { Stage, Layer } from "react-konva";
+import { Stage, Layer, Transformer } from "react-konva";
 import { useContext, useEffect, useRef, useState } from "react";
-import { Transformer } from "react-konva";
 
 import { BoardContext } from "../../context/BoardContext";
 
@@ -18,9 +17,11 @@ import {
 	getZoomedStagePosition,
 } from "../../utils/canvasUtils";
 import TextEditor from "./elements/TextEditor";
+import MobileCanvasControllers from "./MobileCanvasControllers";
 const Canvas = () => {
 	const {
 		currentElement,
+		selectedElementId,
 		elements,
 		scale,
 		stagePosition,
@@ -37,9 +38,9 @@ const Canvas = () => {
 		height: 0,
 	});
 
+	const [mobileControlsOpen, setMobileControlsOpen] = useState(false);
 	const transformerRef = useRef(null);
 	const elementRefs = useRef({});
-
 	const {
 		handleMouseDown,
 		handleMouseMove,
@@ -47,6 +48,11 @@ const Canvas = () => {
 	} = useDrawing();
 
 	const { handleStageDown } = useSelection();
+	const selectedElement = elements.find(
+		(element) =>
+			String(element.id) ===
+			String(selectedElementId)
+	);
 
 	useKeyboard();
 	useTransformer({
@@ -72,7 +78,6 @@ const Canvas = () => {
 		const stage = e.target.getStage();
 
 		const oldScale = scale;
-
 		const scaleBy = 1.05;
 
 		let newScale;
@@ -83,7 +88,6 @@ const Canvas = () => {
 			newScale = oldScale / scaleBy;
 		}
 
-		// Keep zoom within limits
 		newScale = Math.max(
 			0.2,
 			Math.min(3, newScale)
@@ -123,15 +127,23 @@ const Canvas = () => {
 			resizeObserver.disconnect();
 	}, []);
 
+	useEffect(() => {
+		if (
+			selectedElement &&
+			window.innerWidth < 768
+		) {
+			setMobileControlsOpen(true);
+		}
+	}, [selectedElement]);
+
 	return (
 		<div
-			className="relative h-full w-full overflow-hidden bg-slate-50"
 			ref={containerRef}
+			className="relative h-full w-full overflow-hidden bg-slate-50"
 			style={{
 				cursor: getCanvasCursor(selectedTool),
 			}}
 		>
-			{/* Canvas background */}
 			<div
 				className="pointer-events-none absolute inset-0 opacity-60"
 				style={{
@@ -144,8 +156,17 @@ const Canvas = () => {
 			<Stage
 				width={stageSize.width}
 				height={stageSize.height}
-				onMouseMove={handleMouseMove}
 				ref={stageRef}
+				scaleX={scale}
+				scaleY={scale}
+				x={stagePosition.x}
+				y={stagePosition.y}
+				draggable={
+					selectedTool === TOOLS.SELECT
+				}
+				onMouseMove={handleMouseMove}
+				onMouseUp={handleMouseUp}
+				onWheel={handleWheel}
 				onMouseDown={(e) => {
 					if (e.evt.button === 1) {
 						e.evt.preventDefault();
@@ -156,13 +177,6 @@ const Canvas = () => {
 					handleMouseDown(e);
 					handleStageDown(e);
 				}}
-				scaleX={scale}
-				scaleY={scale}
-				x={stagePosition.x}
-				y={stagePosition.y}
-				onMouseUp={handleMouseUp}
-				draggable={selectedTool === TOOLS.SELECT}
-				onWheel={handleWheel}
 			>
 				<Layer>
 					<Transformer
@@ -202,11 +216,17 @@ const Canvas = () => {
 						})}
 
 					{currentElement &&
-						renderCurrentElement(currentElement)}
+						renderCurrentElement(
+							currentElement
+						)}
 				</Layer>
 			</Stage>
-
 			<TextEditor />
+			<MobileCanvasControllers
+				open={mobileControlsOpen}
+				setOpen={setMobileControlsOpen}
+				selectedElement={selectedElement}
+			/>
 		</div>
 	);
 };

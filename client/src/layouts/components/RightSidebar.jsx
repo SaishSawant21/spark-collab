@@ -12,9 +12,16 @@ const RightSidebar = () => {
 	);
 	return (
 		<Sider
-			width={300}
+			width={320}
 			theme="light"
-			className="!overflow-y-auto !border-l !border-slate-200 !bg-white"
+			className="
+				hidden
+				lg:block
+				!bg-white
+				border-l
+				border-slate-200
+				overflow-y-auto
+			"
 		>
 			<div className="flex min-h-full flex-col">
 				{/* Header */}
@@ -93,5 +100,4 @@ const RightSidebar = () => {
 		</Sider>
 	)
 }
-
-export default RightSidebar
+export default RightSidebar;
