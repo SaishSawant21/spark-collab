@@ -58,14 +58,14 @@ const useKeyboardShortcuts = () => {
       zoomOut();
     }
   }, [undo, redo, updateElements, selectedElementId])
-  useEffect(() => {
 
+  useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
+  }, [handleKeyDown]);
 
-  }, [handleKeyDown])
 }
 
 export default useKeyboardShortcuts
