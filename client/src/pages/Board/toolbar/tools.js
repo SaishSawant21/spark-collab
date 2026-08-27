@@ -50,11 +50,12 @@ export const TOOL_LIST = [
     label: "Arrow",
     key: TOOLS.ARROW
   },
-  // {
-  //   id: TOOLS.TEXT,
-  //   icon: Type,
-  //   label: "Text",
-  // },
+  {
+    id: TOOLS.TEXT,
+    icon: Type,
+    label: "Text",
+    key: TOOLS.TEXT,
+  },
   // {
   //   id: TOOLS.IMAGE,
   //   icon: Image,
