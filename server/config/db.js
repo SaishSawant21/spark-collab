@@ -10,5 +10,4 @@ const db = new pg.Client({
     port: processENV.DB_PORT,
     database: processENV.DB_NAME
 })
-
 export default db;
