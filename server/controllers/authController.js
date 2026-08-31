@@ -2,7 +2,7 @@ import { getProfileService, loginUser, registerUser, updateProfileService } from
 import { generateWebAccessToken } from "../utils/jwt.js";
 import dotenv from 'dotenv';
 dotenv.config({ path: ".env.local" });
-
+const isProduction = process.env.NODE_ENV === 'production';
 export const register = async (req, res, next) => {
 	try {
 		const { username, email, password, avatar } = req.body;
@@ -25,8 +25,8 @@ export const login = async (req, res, next) => {
 		const accessToken = generateWebAccessToken(user);
 		res.cookie('accessToken', accessToken, {
 			httpOnly: true,
-			secure: false,
-			sameSite: 'lax',
+			secure: isProduction,
+			sameSite: isProduction ? 'none' : 'lax',
 			maxAge: Number(process.env.COOKIE_MAX_AGE)
 		})
 		return res.status(200).json({
@@ -43,8 +43,8 @@ export const login = async (req, res, next) => {
 export const logOut = (req, res) => {
 	res.clearCookie('accessToken', {
 		httpOnly: true,
-		secure: false,
-		sameSite: 'lax'
+		secure: isProduction,
+		sameSite: isProduction ? 'none' : 'lax',
 	});
 	return res.status(200).json({
 		code: 200,
