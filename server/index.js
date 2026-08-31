@@ -18,10 +18,14 @@ async function checkConnection() {
 checkConnection();
 
 const server = http.createServer(app);
+const allowedOrigins = [
+    "http://localhost:5173",
+    "http://localhost:8080",
+];
 
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:8080",
+        origin: allowedOrigins,
         credentials: true,
     },
 });

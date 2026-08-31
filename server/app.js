@@ -6,8 +6,12 @@ import boardElementRoutes from './routes/boardElementRoutes.js'
 import { errorHandler } from './middlewares/errorMiddleware.js';
 import cors from "cors";
 const app = express();
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:8080",
+];
 app.use(cors({
-  origin: "http://localhost:8080",
+  origin: allowedOrigins,
   credentials: true,
 }))
 app.use(express.urlencoded({ extended: true }));
