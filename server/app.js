@@ -7,6 +7,7 @@ import { errorHandler } from './middlewares/errorMiddleware.js';
 import cors from "cors";
 const app = express();
 const allowedOrigins = [
+  "https://spark-collab-client.onrender.com",
   "http://localhost:5173",
   "http://localhost:8080",
 ];

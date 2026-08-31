@@ -19,6 +19,7 @@ checkConnection();
 
 const server = http.createServer(app);
 const allowedOrigins = [
+    "https://spark-collab-client.onrender.com",
     "http://localhost:5173",
     "http://localhost:8080",
 ];
