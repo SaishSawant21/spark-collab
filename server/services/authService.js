@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { checkEmail, checkUsername, createUser, getUserByIdModel, updateProfileModel } from '../models/userModel.js';
+import { checkEmail, checkUsername, createUser, fetchAllUsersModel, getUserByIdModel, updateProfileModel } from '../models/userModel.js';
 import { createError } from '../utils/createError.js';
 
 const saltRounds = 10;
@@ -47,4 +47,8 @@ export const updateProfileService = async (userData) => {
 		password = await bcrypt.hash(userData.password, saltRounds);
 	}
 	return await updateProfileModel(userData.userId, username, email, password);
+}
+
+export const fetchAllUsersService = async (ownerId) => {
+	return await fetchAllUsersModel(ownerId);
 }

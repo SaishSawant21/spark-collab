@@ -23,3 +23,7 @@ export const getProfile = async () => {
 export const updateUserProfile = async (payload) => {
   return await updateApi(`${prefix}/update-profile`, payload);
 }
+
+export const fetchAllUsers = async () => {
+  return await fetchApi(`${prefix}/fetch-users`);
+}
