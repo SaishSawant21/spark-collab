@@ -11,8 +11,9 @@ import {
 	UserOutlined,
 	ArrowLeftOutlined,
 	LeftOutlined,
+	ShareAltOutlined,
 } from "@ant-design/icons";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { BoardsContext } from "../../context/BoardsContext";
 import {
@@ -22,10 +23,10 @@ import {
 } from "react-router-dom";
 import { exportCanvas } from "../../utils/canvasUtils";
 import { BoardContext } from "../../context/BoardContext";
+import AddMemberModal from "../../components/AddMemberModal";
 
 const { Header } = Layout;
 const { Title } = Typography;
-
 const DesktopHeader = ({
 	showBoardSelector,
 	showExport,
@@ -37,7 +38,11 @@ const DesktopHeader = ({
 	menuItems,
 	stageRef,
 	elements,
+	isBoardOwner,
+	open,
+	setOpen
 }) => {
+
 	return (
 		<Header className="!h-16 !border-b !border-slate-200 !bg-white !px-5">
 			<Flex
@@ -140,6 +145,17 @@ const DesktopHeader = ({
 					gap={8}
 					className="shrink-0"
 				>
+					{isBoardOwner && (
+						<Button
+							type="text"
+							icon={<ShareAltOutlined />}
+							className="!h-9 !rounded-lg !text-slate-500 hover:!bg-emerald-50 hover:!text-emerald-600"
+							onClick={(e) => {
+								e.stopPropagation();
+								setOpen(true);
+							}}
+						/>
+					)}
 					{showExport && (
 						<Button
 							type="primary"
@@ -175,6 +191,13 @@ const DesktopHeader = ({
 					</Dropdown>
 				</Flex>
 			</Flex>
+			<AddMemberModal
+				open={open}
+				board={currentBoard}
+				onClose={() => {
+					setOpen(false);
+				}}
+			/>
 		</Header>
 	);
 };
@@ -184,6 +207,9 @@ const MobileHeader = ({
 	showDashboardButton,
 	navigate,
 	menuItems,
+	isBoardOwner,
+	open,
+	setOpen
 }) => {
 	return (
 		<Header className="!h-14 !border-b !border-slate-200 !bg-white !px-3">
@@ -210,7 +236,17 @@ const MobileHeader = ({
 						{currentBoard?.title || "Spark Collab"}
 					</span>
 				</div>
-
+				{isBoardOwner && (
+					<Button
+						type="text"
+						icon={<ShareAltOutlined />}
+						className="!h-9 !rounded-lg !text-slate-500 hover:!bg-emerald-50 hover:!text-emerald-600"
+						onClick={(e) => {
+							e.stopPropagation();
+							setOpen(true);
+						}}
+					/>
+				)}
 				<Dropdown
 					menu={{ items: menuItems }}
 					trigger={["click"]}
@@ -227,6 +263,13 @@ const MobileHeader = ({
 					</button>
 				</Dropdown>
 			</Flex>
+			<AddMemberModal
+				open={open}
+				board={currentBoard}
+				onClose={() => {
+					setOpen(false);
+				}}
+			/>
 		</Header>
 	);
 };
@@ -235,8 +278,9 @@ const AppHeader = ({
 	showBoardSelector = false,
 	showExport = false,
 }) => {
-	const { logout } = useContext(AuthContext);
+	const { user, logout } = useContext(AuthContext);
 	const { boards, loading } = useContext(BoardsContext);
+	const [openShareModal, setOpenShareModal] = useState(false);
 	const boardContext = useContext(BoardContext);
 	const stageRef = boardContext?.stageRef;
 	const elements = boardContext?.elements;
@@ -258,6 +302,8 @@ const AppHeader = ({
 		(board) =>
 			String(board.id) === String(boardId)
 	);
+
+	const isBoardOwner = parseInt(currentBoard?.owner_id) === parseInt(user?.id);
 
 	const menuItems = [
 		{
@@ -289,6 +335,9 @@ const AppHeader = ({
 					menuItems={menuItems}
 					stageRef={stageRef}
 					elements={elements}
+					isBoardOwner={isBoardOwner}
+					open={openShareModal}
+					setOpen={setOpenShareModal}
 				/>
 			</div>
 
@@ -300,6 +349,9 @@ const AppHeader = ({
 					}
 					navigate={navigate}
 					menuItems={menuItems}
+					isBoardOwner={isBoardOwner}
+					open={openShareModal}
+					setOpen={setOpenShareModal}
 				/>
 			</div>
 		</>

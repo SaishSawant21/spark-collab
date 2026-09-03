@@ -18,7 +18,10 @@ import {
 } from "../../utils/canvasUtils";
 import TextEditor from "./elements/TextEditor";
 import MobileCanvasControllers from "./MobileCanvasControllers";
+import { useLocation } from "react-router-dom";
 const Canvas = () => {
+	const location = useLocation();
+	const isViewer = location?.state?.role === 'viewer';
 	const {
 		currentElement,
 		selectedElementId,
@@ -222,11 +225,12 @@ const Canvas = () => {
 				</Layer>
 			</Stage>
 			<TextEditor />
-			<MobileCanvasControllers
+			{!isViewer && <MobileCanvasControllers
 				open={mobileControlsOpen}
 				setOpen={setMobileControlsOpen}
 				selectedElement={selectedElement}
 			/>
+			}
 		</div>
 	);
 };

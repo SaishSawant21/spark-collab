@@ -8,6 +8,7 @@ import {
 } from "@ant-design/icons";
 import { useContext } from "react";
 import { BoardContext } from "../../context/BoardContext";
+import { useLocation } from "react-router-dom";
 
 const { Footer } = Layout;
 
@@ -20,6 +21,8 @@ const CanvasFooter = () => {
 		zoomOut,
 		resetView,
 	} = useContext(BoardContext);
+	const location = useLocation();
+	const role = location?.state?.role;
 
 	return (
 		<div className="hidden md:block">
@@ -28,20 +31,22 @@ const CanvasFooter = () => {
 				align="center"
 				className="h-full"
 			>
-				<Flex gap={8}>
-					<Tooltip title="Undo">
-						<Button
-							icon={<UndoOutlined />}
-							onClick={undo}
-						/>
-					</Tooltip>
-					<Tooltip title="Redo">
-						<Button
-							icon={<RedoOutlined />}
-							onClick={redo}
-						/>
-					</Tooltip>
-				</Flex>
+				{(role === 'owner' || role === 'editor') &&
+					<Flex gap={8}>
+						<Tooltip title="Undo">
+							<Button
+								icon={<UndoOutlined />}
+								onClick={undo}
+							/>
+						</Tooltip>
+						<Tooltip title="Redo">
+							<Button
+								icon={<RedoOutlined />}
+								onClick={redo}
+							/>
+						</Tooltip>
+					</Flex>
+				}
 				<Flex align="center" gap={8}>
 					<Button
 						icon={<MinusOutlined />}
@@ -58,12 +63,14 @@ const CanvasFooter = () => {
 						Reset View
 					</Button>
 				</Flex>
-				<Button
-					danger
-					icon={<DeleteOutlined />}
-				>
-					Delete
-				</Button>
+				{role === 'owner' &&
+					<Button
+						danger
+						icon={<DeleteOutlined />}
+					>
+						Delete
+					</Button>
+				}
 			</Flex>
 		</div>
 	);
