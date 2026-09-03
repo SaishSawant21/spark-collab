@@ -13,6 +13,7 @@ import {
 	message,
 	Dropdown,
 	Space,
+	Tag,
 } from "antd";
 import { PlusOutlined, ShareAltOutlined } from "@ant-design/icons";
 import { useContext, useState } from "react";
@@ -20,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import { messageContants } from "../utils/constants";
 import { BoardsContext } from "../context/BoardsContext";
+import { AuthContext } from "./../context/AuthContext";
 import {
 	createBoard,
 	deleteBoard,
@@ -37,7 +39,7 @@ const Dashboard = () => {
 	const [openShareModal, setOpenShareModal] = useState(false);
 	const { boards, loading, loadBoards } =
 		useContext(BoardsContext);
-
+	const { user } = useContext(AuthContext);
 	const [form] = Form.useForm();
 	const navigate = useNavigate();
 
@@ -134,14 +136,17 @@ const Dashboard = () => {
 				<span
 					className="cursor-pointer font-medium text-emerald-700 transition-colors hover:text-emerald-800"
 					onClick={() =>
-						navigate(`/board/${board.id}`)
+						navigate(`/board/${board.id}`, {
+							state: {
+								role: board?.role
+							}
+						})
 					}
 				>
 					{title}
 				</span>
 			),
 		},
-
 		{
 			title: "Last Modified",
 			dataIndex: "updated_at",
@@ -150,62 +155,75 @@ const Dashboard = () => {
 			render: (date) =>
 				dayjs(date).format("DD/MM/YYYY"),
 		},
+		{
+			title: "Role",
+			key: "role",
+			render: (_, board) => {
+				const roleConfig = {
+					owner: {
+						label: "Owner",
+						color: "green",
+					},
+					editor: {
+						label: "Editor",
+						color: "blue",
+					},
+					viewer: {
+						label: "Viewer",
+						color: "default",
+					},
+				};
 
+				const config = roleConfig[board.role];
+
+				return (
+					<Tag color={config?.color}>
+						{config?.label || board.role}
+					</Tag>
+				);
+			},
+		},
 		{
 			title: "Actions",
 			key: "actions",
+			render: (_, board) => {
+				const isOwner = board.owner_id === parseInt(user.id);
 
-			render: (_, board) => (
-				<Space>
-					<Dropdown
-						trigger={["click"]}
-						menu={{
-							items: [
-								{
-									key: "open",
-									label: "Open",
+				if (!isOwner) {
+					return null;
+				}
 
-									onClick: () =>
-										navigate(`/board/${board.id}`),
-								},
-
-								{
-									key: "edit",
-									label: "Edit",
-
-									onClick: () =>
-										handleEdit(board),
-								},
-
-								{
-									key: "delete",
-									label: "Delete",
-									danger: true,
-
-									onClick: () =>
-										handleDelete(board.id),
-								},
-							],
-						}}
-					>
-						<Button
-							type="text"
-							className="!text-lg !text-slate-500 hover:!bg-slate-100"
+				return (
+					<Space>
+						<Dropdown
+							menu={{
+								items: [
+									{
+										key: "edit",
+										label: "Edit",
+									},
+									{
+										key: "delete",
+										label: "Delete",
+									},
+								],
+							}}
 						>
-							⋮
-						</Button>
-					</Dropdown>
-					<ShareAltOutlined
-						className="cursor-pointer !text-slate-500 hover:!text-emerald-600"
-						onClick={(e) => {
-							e.stopPropagation();
-							setSharingBoard(board);
-							setOpenShareModal(true);
-						}}
-					/>
-				</Space>
-			),
-		},
+							...
+						</Dropdown>
+
+						<ShareAltOutlined
+							className="cursor-pointer !text-slate-500 hover:!text-emerald-600"
+							onClick={(e) => {
+								e.stopPropagation();
+								setSharingBoard(board);
+								setOpenShareModal(true);
+							}}
+						/>
+					</Space>
+				);
+			},
+		}
 	];
 
 	return (
@@ -350,13 +368,6 @@ const Dashboard = () => {
 				onClose={() => {
 					setOpenShareModal(false);
 					setSharingBoard(null);
-				}}
-				onAddMember={async ({ userId, role }) => {
-					console.log({
-						boardId: sharingBoard?.id,
-						userId,
-						role,
-					});
 				}}
 			/>
 			<Modal
