@@ -10,11 +10,19 @@ export const createBoardModel = async (title, description, is_public, ownerId) =
 }
 
 export const fetchBoardsModel = async (ownerId) => {
-	const fetchBoards = await db.query(`SELECT * FROM boards
-            WHERE owner_id=$1 ORDER BY created_at DESC;
-            `, [ownerId]);
+	const fetchBoards = await db.query(`SELECT DISTINCT b.*,
+    CASE
+        WHEN b.owner_id = $1 THEN 'owner'
+        ELSE bm.role
+				END AS role
+		FROM boards b
+		LEFT JOIN board_members bm
+				ON bm.board_id = b.id
+				AND bm.user_id = $1
+		WHERE b.owner_id = $1
+			OR bm.user_id = $1
+		ORDER BY b.created_at DESC;`, [ownerId]);
 	return fetchBoards.rows;
-
 }
 
 export const getBoardByIdModel = async (boardId, ownerId = null) => {
