@@ -19,7 +19,6 @@ const AddMemberModal = ({
   open,
   board,
   onClose,
-  onAddMember,
 }) => {
   const [form] = Form.useForm();
   const [users, setUsers] = useState([]);
@@ -57,7 +56,6 @@ const AddMemberModal = ({
       setLoading(true);
       const res = await fetchBoardMembers(board?.id);
       if (res?.code === 200) {
-        console.log(res)
         setMembers(res?.boardMembers);
       }
     } catch (error) {
@@ -82,8 +80,8 @@ const AddMemberModal = ({
   }
 
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    if (open) fetchUsers();
+  }, [open]);
 
   useEffect(() => {
     if (board) {
@@ -134,11 +132,11 @@ const AddMemberModal = ({
           form={form}
           layout="inline"
           onFinish={handleAddMember}
-          className="mb-6 flex w-full"
+          className="mb-6"
         >
           <Form.Item
             name="userId"
-            className="flex-1 min-w-0"
+            className="!mb-0"
             rules={[
               {
                 required: true,
@@ -156,16 +154,16 @@ const AddMemberModal = ({
                 value: user.id,
               }))}
               allowClear
-              className="w-full"
+              style={{ width: 300 }}
             />
           </Form.Item>
 
           <Form.Item
             name="role"
-            allowClear
+            className="!mb-0"
           >
             <Select
-              placeholder='Select role'
+              placeholder="Select role"
               options={[
                 {
                   label: "Viewer",
@@ -180,7 +178,7 @@ const AddMemberModal = ({
             />
           </Form.Item>
 
-          <Form.Item>
+          <Form.Item className="!mb-0">
             <Button
               type="primary"
               htmlType="submit"
