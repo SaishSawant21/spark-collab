@@ -12,8 +12,9 @@ import {
 	Modal,
 	message,
 	Dropdown,
+	Space,
 } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, ShareAltOutlined } from "@ant-design/icons";
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
@@ -24,6 +25,7 @@ import {
 	deleteBoard,
 	updateBoard,
 } from "../services/boardService";
+import AddMemberModal from "../components/AddMemberModal";
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -31,7 +33,8 @@ const { Title, Text } = Typography;
 const Dashboard = () => {
 	const [openCreateBoard, setOpenCreateBoard] = useState(false);
 	const [editingBoard, setEditingBoard] = useState(null);
-
+	const [sharingBoard, setSharingBoard] = useState(null);
+	const [openShareModal, setOpenShareModal] = useState(false);
 	const { boards, loading, loadBoards } =
 		useContext(BoardsContext);
 
@@ -153,44 +156,54 @@ const Dashboard = () => {
 			key: "actions",
 
 			render: (_, board) => (
-				<Dropdown
-					trigger={["click"]}
-					menu={{
-						items: [
-							{
-								key: "open",
-								label: "Open",
+				<Space>
+					<Dropdown
+						trigger={["click"]}
+						menu={{
+							items: [
+								{
+									key: "open",
+									label: "Open",
 
-								onClick: () =>
-									navigate(`/board/${board.id}`),
-							},
+									onClick: () =>
+										navigate(`/board/${board.id}`),
+								},
 
-							{
-								key: "edit",
-								label: "Edit",
+								{
+									key: "edit",
+									label: "Edit",
 
-								onClick: () =>
-									handleEdit(board),
-							},
+									onClick: () =>
+										handleEdit(board),
+								},
 
-							{
-								key: "delete",
-								label: "Delete",
-								danger: true,
+								{
+									key: "delete",
+									label: "Delete",
+									danger: true,
 
-								onClick: () =>
-									handleDelete(board.id),
-							},
-						],
-					}}
-				>
-					<Button
-						type="text"
-						className="!text-lg !text-slate-500 hover:!bg-slate-100"
+									onClick: () =>
+										handleDelete(board.id),
+								},
+							],
+						}}
 					>
-						⋮
-					</Button>
-				</Dropdown>
+						<Button
+							type="text"
+							className="!text-lg !text-slate-500 hover:!bg-slate-100"
+						>
+							⋮
+						</Button>
+					</Dropdown>
+					<ShareAltOutlined
+						className="cursor-pointer !text-slate-500 hover:!text-emerald-600"
+						onClick={(e) => {
+							e.stopPropagation();
+							setSharingBoard(board);
+							setOpenShareModal(true);
+						}}
+					/>
+				</Space>
 			),
 		},
 	];
@@ -331,7 +344,21 @@ const Dashboard = () => {
 					/>
 				</div>
 			</div>
-
+			<AddMemberModal
+				open={openShareModal}
+				board={sharingBoard}
+				onClose={() => {
+					setOpenShareModal(false);
+					setSharingBoard(null);
+				}}
+				onAddMember={async ({ userId, role }) => {
+					console.log({
+						boardId: sharingBoard?.id,
+						userId,
+						role,
+					});
+				}}
+			/>
 			<Modal
 				title={
 					<span className="text-lg font-semibold text-slate-800">
