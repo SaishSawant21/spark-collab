@@ -3,10 +3,13 @@ import LeftSidebar from "./components/LeftSidebar";
 import RightSidebar from "./components/RightSidebar";
 import AppHeader from "./components/Header";
 import AppFooter from "./components/Footer";
+import { useLocation } from "react-router-dom";
 
 const { Content } = Layout;
 
 const BoardLayout = ({ children }) => {
+	const location = useLocation();
+	const isViewer = location?.state?.role === 'viewer';
 	return (
 		<Layout className="h-screen overflow-hidden">
 			<AppHeader
@@ -15,11 +18,11 @@ const BoardLayout = ({ children }) => {
 			/>
 
 			<Layout className="min-h-0 flex-1">
-				<div className="hidden md:block">
+				{!isViewer && <div className="hidden md:block">
 					<LeftSidebar />
-				</div>
+				</div>}
 				<Layout className="min-h-0 min-w-0">
-					<Content className="min-h-0 overflow-hidden bg-slate-500">
+					<Content className={`min-h-0 overflow-hidden bg-slate-500 ${isViewer ? "pointer-events-none" : ""}`}>
 						{children}
 					</Content>
 
@@ -27,9 +30,11 @@ const BoardLayout = ({ children }) => {
 						<AppFooter isCanvas={true} />
 					</div>
 				</Layout>
-				<div className="hidden md:block">
-					<RightSidebar />
-				</div>
+				{!isViewer &&
+					<div className="hidden md:block">
+						<RightSidebar />
+					</div>
+				}
 			</Layout>
 		</Layout>
 	);
