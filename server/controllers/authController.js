@@ -1,4 +1,4 @@
-import { getProfileService, loginUser, registerUser, updateProfileService } from "../services/authService.js";
+import { fetchAllUsersService, getProfileService, loginUser, registerUser, updateProfileService } from "../services/authService.js";
 import { generateWebAccessToken } from "../utils/jwt.js";
 import dotenv from 'dotenv';
 dotenv.config({ path: ".env.local" });
@@ -91,3 +91,17 @@ export const updateProfile = async (req, res) => {
 		message: 'Data updated successfully'
 	})
 }
+
+export const fetchAllUsers = async (req, res) => {
+	try {
+		const ownerId = req.user.id;
+		const users = await fetchAllUsersService(ownerId);
+		return res.status(200).json({
+			code: 200,
+			message: 'Users fetched successfully',
+			users
+		})
+	} catch (error) {
+		console.log(error);
+	}
+} 

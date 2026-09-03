@@ -62,3 +62,9 @@ export const updateProfileModel = async (userId, username, email, password = nul
     const result = await db.query(query, values);
     return result.rows[0];
 };
+
+export const fetchAllUsersModel = async (ownerId) => {
+    const result = await db.query(`SELECT id, username, email from users
+        WHERE id != $1`, [ownerId]);
+    return result.rows;
+}
