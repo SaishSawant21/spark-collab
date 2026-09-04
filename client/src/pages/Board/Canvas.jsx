@@ -18,6 +18,7 @@ import {
 import TextEditor from "./elements/TextEditor";
 import MobileCanvasControllers from "./MobileCanvasControllers";
 import { useLocation } from "react-router-dom";
+/* eslint-disable react-hooks/exhaustive-deps */
 const Canvas = () => {
 	const location = useLocation();
 	const isViewer = location?.state?.role === 'viewer';
@@ -129,6 +130,13 @@ const Canvas = () => {
 	}, []);
 
 	useEffect(() => {
+		if (!stageRef.current) return;
+
+		stageRef.current.container().style.cursor =
+			getCanvasCursor(selectedTool);
+	}, [selectedTool]);
+
+	useEffect(() => {
 		if (
 			selectedElement &&
 			window.innerWidth < 768
@@ -141,9 +149,6 @@ const Canvas = () => {
 		<div
 			ref={containerRef}
 			className="relative h-full w-full overflow-hidden bg-slate-50"
-			style={{
-				cursor: getCanvasCursor(selectedTool),
-			}}
 		>
 			<div
 				className="pointer-events-none absolute inset-0 opacity-60"
