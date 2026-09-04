@@ -11,7 +11,7 @@ import {
 	UserOutlined,
 	ArrowLeftOutlined,
 	LeftOutlined,
-	ShareAltOutlined,
+	UserAddOutlined,
 } from "@ant-design/icons";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
@@ -148,7 +148,7 @@ const DesktopHeader = ({
 					{isBoardOwner && (
 						<Button
 							type="text"
-							icon={<ShareAltOutlined />}
+							icon={<UserAddOutlined />}
 							className="!h-9 !rounded-lg !text-slate-500 hover:!bg-emerald-50 hover:!text-emerald-600"
 							onClick={(e) => {
 								e.stopPropagation();
@@ -239,7 +239,7 @@ const MobileHeader = ({
 				{isBoardOwner && (
 					<Button
 						type="text"
-						icon={<ShareAltOutlined />}
+						icon={<UserAddOutlined />}
 						className="!h-9 !rounded-lg !text-slate-500 hover:!bg-emerald-50 hover:!text-emerald-600"
 						onClick={(e) => {
 							e.stopPropagation();

@@ -15,7 +15,7 @@ import {
 	Space,
 	Tag,
 } from "antd";
-import { PlusOutlined, ShareAltOutlined } from "@ant-design/icons";
+import { PlusOutlined, UserAddOutlined } from "@ant-design/icons";
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
@@ -208,10 +208,9 @@ const Dashboard = () => {
 								],
 							}}
 						>
-							...
+							<span className="cursor-pointer">...</span>
 						</Dropdown>
-
-						<ShareAltOutlined
+						<UserAddOutlined
 							className="cursor-pointer !text-slate-500 hover:!text-emerald-600"
 							onClick={(e) => {
 								e.stopPropagation();
