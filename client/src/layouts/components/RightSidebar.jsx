@@ -1,4 +1,4 @@
-import { Divider, Flex, Layout, Typography } from "antd"
+import { Flex, Layout, Typography } from "antd"
 import { useContext } from "react";
 import { BoardContext } from "../../context/BoardContext";
 import PropertiesPanel from "../../components/properties/PropertiesPanel";

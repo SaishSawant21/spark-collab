@@ -2,13 +2,9 @@ import {
   MousePointer2,
   Square,
   Circle,
-  Ellipsis,
   Minus,
   ArrowRight,
   Type,
-  Image,
-  Hand,
-  CircleEllipsis
 } from "lucide-react";
 import { TOOLS } from "../../../utils/constants";
 import EllipseIcon from "../../../assets/Icon/EllipseIcon";

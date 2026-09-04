@@ -1,8 +1,7 @@
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { socket } from "../../socket";
-import { BoardContext } from "../../context/BoardContext";
 import { useState } from "react";
-
+/* eslint-disable react-hooks/exhaustive-deps */
 const useBoardSocket = (boardId, updateElements, replaceElements) => {
   const [remoteSelections, setRemoteSelections] = useState({});
   useEffect(() => {

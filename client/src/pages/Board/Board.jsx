@@ -1,11 +1,8 @@
-import Canvas from './Canvas'
-import BoardProvider from '../../context/BoardProvider'
-import ToolBar from './toolbar/ToolBar'
+import Canvas from './Canvas';
 
 const Board = () => {
-  return (
-    <Canvas />
-  )
+	return (
+		<Canvas />
+	)
 }
-
 export default Board

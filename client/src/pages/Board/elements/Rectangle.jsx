@@ -1,15 +1,11 @@
 import { Rect } from "react-konva";
 import { forwardRef, useContext } from 'react'
 import { BoardContext } from "../../../context/BoardContext";
-import { TOOLS } from "../../../utils/constants";
 import useElementInteractions from "../../hooks/useElementInteractions";
 
 const Rectangle = forwardRef(({ element }, ref) => {
-  const { selectedTool,
-    setElements,
-    selectedElementId, setSelectedElementId } = useContext(BoardContext);
+  const { selectedElementId } = useContext(BoardContext);
   const interactions = useElementInteractions(element);
-
 
   return (
     <Rect ref={ref}

@@ -2,14 +2,11 @@ import { Button, Flex, Form, Input, message, Typography } from "antd";
 import { messageContants } from "../../utils/constants";
 import { getProfile, updateUserProfile } from "../../services/authService";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 
 const ProfileUpdate = () => {
 	const [form] = Form.useForm();
 	const [loading, setLoading] = useState(false);
 	const [initialProfile, setInitialProfile] = useState({});
-	const navigate = useNavigate();
-
 	const requiredRule = {
 		required: true,
 		message: messageContants.requiredMsg,
