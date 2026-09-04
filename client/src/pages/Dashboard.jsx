@@ -21,7 +21,6 @@ import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import { messageContants } from "../utils/constants";
 import { BoardsContext } from "../context/BoardsContext";
-import { AuthContext } from "./../context/AuthContext";
 import {
 	createBoard,
 	deleteBoard,
@@ -39,7 +38,6 @@ const Dashboard = () => {
 	const [openShareModal, setOpenShareModal] = useState(false);
 	const { boards, loading, loadBoards } =
 		useContext(BoardsContext);
-	const { user } = useContext(AuthContext);
 	const [form] = Form.useForm();
 	const navigate = useNavigate();
 
@@ -187,8 +185,7 @@ const Dashboard = () => {
 			title: "Actions",
 			key: "actions",
 			render: (_, board) => {
-				const isOwner = board.owner_id === parseInt(user.id);
-
+				const isOwner = board?.role === "owner";
 				if (!isOwner) {
 					return null;
 				}
@@ -201,10 +198,12 @@ const Dashboard = () => {
 									{
 										key: "edit",
 										label: "Edit",
+										onClick: () => handleEdit(board)
 									},
 									{
 										key: "delete",
 										label: "Delete",
+										onClick: () => handleDelete(board.id)
 									},
 								],
 							}}
