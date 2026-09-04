@@ -6,7 +6,6 @@ import { BoardContext } from "../../context/BoardContext";
 import useDrawing from "../hooks/useDrawing";
 import useTransformer from "../hooks/useTransformer";
 import useSelection from "../hooks/useSelection";
-import useKeyboard from "../hooks/useKeyboard";
 import useKeyboardShortcuts from "../hooks/useKeyboardShortcuts";
 
 import elementRegistry from "./elements/elementRegistry";
@@ -57,7 +56,6 @@ const Canvas = () => {
 			String(selectedElementId)
 	);
 
-	useKeyboard();
 	useTransformer({
 		transformerRef,
 		elementRefs,

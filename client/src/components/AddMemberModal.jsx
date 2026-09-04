@@ -136,7 +136,7 @@ const AddMemberModal = ({
         >
           <Form.Item
             name="userId"
-            className="!mb-0"
+            className="mb-0!"
             rules={[
               {
                 required: true,

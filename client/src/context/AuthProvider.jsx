@@ -10,6 +10,7 @@ const AuthProvider = ({ children }) => {
       const response = await fetchCurrentUser();
       setUser(response?.user || null);
     } catch (error) {
+      console.log(error);
       setUser(null);
     } finally {
       setLoading(false);

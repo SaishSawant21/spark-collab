@@ -1,7 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import { BoardContext } from "./BoardContext";
 import { messageContants, TOOLS } from "../utils/constants";
-import offsetElement from "../utils/offsetElement";
 import useElementActions from "./actions/elementActions";
 import useBoardSocket from "../pages/hooks/useBoardSocket";
 import { socket } from "../socket";
@@ -22,19 +21,10 @@ const BoardProvider = ({ children }) => {
     y: 0,
   });
   const [scale, setScale] = useState(1);
-  const [lastPointerPosition, setLastPointerPosition] = useState(null);
   const [editingTextId, setEditingTextId] = useState(null);
   const [editingText, setEditingText] = useState("");
   const { boardId } = useParams() || null;
   const stageRef = useRef(null);
-  const saveHistory = useCallback(() => {
-    setUndoStack((prev) => [
-      ...prev,
-      structuredClone(elements),
-    ]);
-
-    setRedoStack([]);
-  }, [elements]);
 
   const updateElements = useCallback((updater) => {
     setElements((prev) => {

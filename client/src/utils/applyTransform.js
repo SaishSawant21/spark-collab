@@ -2,7 +2,7 @@ import { TOOLS } from "./constants";
 
 const applyTransform = (element, node) => {
   switch (element.element_type) {
-    case TOOLS.RECTANGLE:
+    case TOOLS.RECTANGLE: {
       const newWidth = Math.max(10, node.width() * node.scaleX());
       const newHeight = Math.max(10, node.height() * node.scaleY());
 
@@ -19,6 +19,7 @@ const applyTransform = (element, node) => {
           y: node.y(),
         },
       };
+    }
     case TOOLS.CIRCLE: {
       const newRadius = Math.max(5, node.radius() * node.scaleX());
       node.scaleX(1);
@@ -89,5 +90,4 @@ const applyTransform = (element, node) => {
       return element;
   }
 }
-
 export default applyTransform

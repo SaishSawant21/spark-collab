@@ -14,6 +14,7 @@ const useKeyboardShortcuts = () => {
   } = useContext(BoardContext);
   const { boardId } = useParams();
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleKeyDown = useCallback(async (e) => {
     if (e.ctrlKey && e.key.toLowerCase() === "z" && !e.shiftKey) {
       e.preventDefault();
