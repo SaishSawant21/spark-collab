@@ -304,7 +304,6 @@ const AppHeader = ({
 	);
 
 	const isBoardOwner = parseInt(currentBoard?.owner_id) === parseInt(user?.id);
-
 	const menuItems = [
 		{
 			key: "myprofile",

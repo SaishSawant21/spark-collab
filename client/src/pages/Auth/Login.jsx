@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 const Login = () => {
 	const [loading, setLoading] = useState(false);
-	const { setUser } = useContext(AuthContext);
+	const { setIsLoggedIn } = useContext(AuthContext);
 	const navigate = useNavigate();
 	const onSubmit = async (values) => {
 		try {
@@ -15,9 +15,7 @@ const Login = () => {
 			const res = await authenticateUser(values);
 			if (res.code === 200) {
 				message.success(res?.message);
-				setUser({
-					username: values?.username
-				})
+				setIsLoggedIn(true);
 				navigate('/dashboard');
 			}
 		} catch (error) {

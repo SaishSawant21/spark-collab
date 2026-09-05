@@ -3,13 +3,13 @@ import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 
 const ProtectedRoute = () => {
-  const { isAuthenticated, loading } = useContext(AuthContext);
+  const { isLoggedIn, loading } = useContext(AuthContext);
 
   if (loading) {
     return null;
   }
 
-  if (!isAuthenticated) {
+  if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
   }
 

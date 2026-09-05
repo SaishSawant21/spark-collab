@@ -5,6 +5,7 @@ import { fetchCurrentUser, logoutUser } from "../services/authService";
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const loadUser = async () => {
     try {
       const response = await fetchCurrentUser();
@@ -18,13 +19,16 @@ const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    loadUser();
-  }, []);
+    if (isLoggedIn) {
+      loadUser();
+    }
+  }, [isLoggedIn]);
 
   const logout = async () => {
     try {
       await logoutUser();
       setUser(null);
+      setIsLoggedIn(false);
     } catch (error) {
       console.log("Logout failed:", error);
     }
@@ -35,7 +39,8 @@ const AuthProvider = ({ children }) => {
     setUser,
     loading,
     setLoading,
-    isAuthenticated: !!user,
+    isLoggedIn,
+    setIsLoggedIn,
     logout,
   };
 
