@@ -91,7 +91,13 @@ const Login = () => {
 								className="!rounded-lg"
 							/>
 						</Form.Item>
-
+						<Button
+							type="link"
+							className="!px-0 !pb-2"
+							onClick={() => navigate("/forgot-password")}
+						>
+							Forgot Password?
+						</Button>
 						<Button
 							htmlType="submit"
 							type="primary"
@@ -103,7 +109,18 @@ const Login = () => {
 							Sign in
 						</Button>
 					</Form>
-
+					<div className="mt-2 text-center">
+						<span className="text-sm font-normal text-slate-500">
+							Don't have an account? Register{" "}
+							<Button
+								type="link"
+								className="!h-auto !px-0 !text-sm !font-normal"
+								onClick={() => navigate("/registration")}
+							>
+								Here
+							</Button>
+						</span>
+					</div>
 					<div className="mt-6 text-center">
 						<Typography.Text className="text-xs text-slate-400">
 							Collaborate. Create. Connect.
