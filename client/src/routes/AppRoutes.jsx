@@ -13,6 +13,7 @@ import BoardLayout from "../layouts/BoardLayout";
 import ProtectedRoute from "./ProtectedRoutes";
 import BoardRedirect from "./BoardRedirect";
 import AppLayout from "../layouts/AppLayout";
+import ForgotPassword from "../pages/Auth/ForgotPassword";
 
 const AppRoutes = () => {
   return (
@@ -21,7 +22,7 @@ const AppRoutes = () => {
         {/* Public */}
         <Route path="/login" element={<Login />} />
         <Route path="/registration" element={<Registration />} />
-
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         {/* Protected */}
         <Route element={<ProtectedRoute />}>
           <Route index element={<BoardRedirect />} />
