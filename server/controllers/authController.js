@@ -1,19 +1,21 @@
-import { fetchAllUsersService, getProfileService, loginUser, registerUser, updateProfileService } from "../services/authService.js";
+import { fetchAllUsersService, forgotPasswordService, getProfileService, loginUser, registerUser, updateProfileService } from "../services/authService.js";
 import { generateWebAccessToken } from "../utils/jwt.js";
 import dotenv from 'dotenv';
 dotenv.config({ path: ".env.local" });
 const isProduction = process.env.NODE_ENV === 'production';
 export const register = async (req, res, next) => {
 	try {
-		const { username, email, password, avatar } = req.body;
-		const user = await registerUser(username, email, password, avatar);
+		console.log(req.body);
+		const { username, email, password } = req.body;
+		const user = await registerUser(username, email, password);
 		if (user) {
 			res.status(201).json({
 				code: 201,
 				message: 'Registration successful. Please log in to continue.'
 			});
 		}
-	} catch (e) {
+	} catch (error) {
+		console.log(error)
 		next(error);
 	}
 }
@@ -37,7 +39,6 @@ export const login = async (req, res, next) => {
 	} catch (error) {
 		next(error);
 	}
-
 }
 
 export const logOut = (req, res) => {
@@ -92,7 +93,7 @@ export const updateProfile = async (req, res) => {
 	})
 }
 
-export const fetchAllUsers = async (req, res) => {
+export const fetchAllUsers = async (req, res, next) => {
 	try {
 		const ownerId = req.user.id;
 		const users = await fetchAllUsersService(ownerId);
@@ -103,5 +104,19 @@ export const fetchAllUsers = async (req, res) => {
 		})
 	} catch (error) {
 		console.log(error);
+		next(error);
 	}
-} 
+}
+
+export const forgotPassword = async (req, res, next) => {
+	try {
+		const { email } = req.body;
+		await forgotPasswordService(email);
+		return res.status(200).json({
+			code: 200,
+			message: 'Reset Password link has been sent to your email. Kindly check your email.'
+		});
+	} catch (error) {
+		next(error);
+	}
+}
