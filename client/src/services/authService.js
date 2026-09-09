@@ -27,3 +27,7 @@ export const updateUserProfile = async (payload) => {
 export const fetchAllUsers = async () => {
   return await fetchApi(`${prefix}/fetch-users`);
 }
+
+export const sendForgotPasswordEmail = async (payload) => {
+  return await submitApi(`${prefix}/forgot-password`, payload);
+}
