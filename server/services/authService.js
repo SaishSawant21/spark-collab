@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { checkEmail, checkUsername, createUser, fetchAllUsersModel, getUserByIdModel, saveResetPasswordToken, updateProfileModel } from '../models/userModel.js';
+import { checkEmail, checkUsername, createUser, fetchAllUsersModel, getUserByIdModel, resetPasswordModel, saveResetPasswordToken, updateProfileModel, verifyResetTokenModel } from '../models/userModel.js';
 import { createError } from '../utils/createError.js';
 import { sendResetPasswordEmail } from '../utils/sendEmail.js';
 import crypto from 'crypto';
@@ -74,3 +74,46 @@ export const forgotPasswordService = async (email) => {
 	);
 	await sendResetPasswordEmail(email, resetToken);
 }
+
+export const verifyResetTokenService = async (token) => {
+	if (!token) throw createError('Token is required', 400);
+	const hashedToken = crypto
+		.createHash("sha256")
+		.update(token)
+		.digest("hex");
+
+	const user = await verifyResetTokenModel(hashedToken);
+
+	if (!user) {
+		throw createError("Invalid or expired reset token.", 400);
+	}
+
+	return user;
+}
+
+export const resetPasswordService = async (token, password) => {
+	if (!token) {
+		throw createError("Reset token is required.", 400);
+	}
+
+	if (!password) {
+		throw createError("Password is required.", 400);
+	}
+
+	const hashedToken = crypto
+		.createHash("sha256")
+		.update(token)
+		.digest("hex");
+
+	const user = await verifyResetTokenModel(hashedToken);
+
+	if (!user) {
+		throw createError("Invalid or expired reset token.", 400);
+	}
+
+	const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+	await resetPasswordModel(user.id, hashedPassword);
+
+	return true;
+};

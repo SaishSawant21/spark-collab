@@ -89,3 +89,26 @@ export const saveResetPasswordToken = async (
 
 	return result.rows[0];
 };
+
+export const verifyResetTokenModel = async (hashedToken) => {
+	const result = await db.query(
+		`SELECT id FROM users 
+		 WHERE reset_password_token = $1
+		 AND reset_password_expires_at > NOW()`,
+		[hashedToken])
+	return result?.rows[0];
+}
+
+export const resetPasswordModel = async (userId, hashedPassword) => {
+	const result = await db.query(
+		`UPDATE users
+			 SET password = $1,
+			     reset_password_token = NULL,
+			     reset_password_expires_at = NULL
+			 WHERE id = $2
+			 RETURNING id`,
+		[hashedPassword, userId]
+	);
+
+	return result.rows[0];
+};

@@ -1,4 +1,4 @@
-import { fetchAllUsersService, forgotPasswordService, getProfileService, loginUser, registerUser, updateProfileService } from "../services/authService.js";
+import { fetchAllUsersService, forgotPasswordService, getProfileService, loginUser, registerUser, resetPasswordService, updateProfileService, verifyResetTokenService } from "../services/authService.js";
 import { generateWebAccessToken } from "../utils/jwt.js";
 import dotenv from 'dotenv';
 dotenv.config({ path: ".env.local" });
@@ -120,3 +120,31 @@ export const forgotPassword = async (req, res, next) => {
 		next(error);
 	}
 }
+
+export const verifyResetToken = async (req, res, next) => {
+	try {
+		const { token } = req.query;
+		await verifyResetTokenService(token);
+		return res.status(200).json({
+			code: 200,
+			message: 'Verified successfully'
+		});
+	} catch (error) {
+		next(error);
+	}
+}
+
+export const resetPassword = async (req, res, next) => {
+	try {
+		const { token, password } = req.body;
+
+		await resetPasswordService(token, password);
+
+		return res.status(200).json({
+			code: 200,
+			message: "Password reset successful. Please log in.",
+		});
+	} catch (error) {
+		next(error);
+	}
+};
