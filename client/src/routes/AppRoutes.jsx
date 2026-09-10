@@ -39,7 +39,7 @@ const AppRoutes = () => {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/link-expired" element={<LinkExpired />} />
-
+          <Route path="/" element={<Navigate to="/login" replace />} />
           {/* Protected */}
           <Route element={<ProtectedRoute />}>
             <Route index element={<BoardRedirect />} />
