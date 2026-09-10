@@ -31,3 +31,11 @@ export const fetchAllUsers = async () => {
 export const sendForgotPasswordEmail = async (payload) => {
   return await submitApi(`${prefix}/forgot-password`, payload);
 }
+
+export const verifyResetPasswordToken = async (token) => {
+  return await fetchApi(`${prefix}/verify-reset-token?token=${encodeURIComponent(token)}`);
+}
+
+export const resetPassword = async (payload) => {
+  return await submitApi(`${prefix}/reset-password`, payload);
+}
