@@ -14,6 +14,8 @@ import ProtectedRoute from "./ProtectedRoutes";
 import BoardRedirect from "./BoardRedirect";
 import AppLayout from "../layouts/AppLayout";
 import ForgotPassword from "../pages/Auth/ForgotPassword";
+import ResetPassword from "../pages/Auth/ResetPassword";
+import LinkExpired from "../pages/Auth/LinkExpired";
 
 const AppRoutes = () => {
   return (
@@ -23,6 +25,8 @@ const AppRoutes = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/registration" element={<Registration />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/link-expired" element={<LinkExpired />} />
         {/* Protected */}
         <Route element={<ProtectedRoute />}>
           <Route index element={<BoardRedirect />} />
