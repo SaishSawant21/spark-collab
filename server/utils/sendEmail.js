@@ -1,16 +1,30 @@
-import { Resend } from 'resend';
-import dotenv from 'dotenv';
+import { MailerSend, EmailParams, Sender, Recipient } from "mailersend";
+import dotenv from "dotenv";
 
 dotenv.config({ path: "env.local" });
-const resend = new Resend(process.env.RESEND_API_KEY);
+
+const mailerSend = new MailerSend({
+  apiKey: process.env.MAIL_SEND_TOKEN,
+});
+
 export const sendResetPasswordEmail = async (email, resetToken) => {
   const resetUrl =
     `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
-  await resend.emails.send({
-    from: "Spark Collab <onboarding@resend.dev>",
-    to: email,
-    subject: "Reset your Spark Collab password",
-    html: `
+
+  const sentFrom = new Sender(
+    "noreply@test-3m5jgrox5jzgdpyo.mlsender.net",
+    "Spark Collab"
+  );
+
+  const recipient = [
+    new Recipient(email),
+  ];
+
+  const emailParams = new EmailParams()
+    .setFrom(sentFrom)
+    .setTo(recipient)
+    .setSubject("Reset your Spark Collab password")
+    .setHtml(`
       <h2>Reset your password</h2>
 
       <p>
@@ -42,6 +56,19 @@ export const sendResetPasswordEmail = async (email, resetToken) => {
       <p>
         If you didn't request this, you can safely ignore this email.
       </p>
-    `,
-  });
-}
+    `)
+    .setText(`
+      Reset your Spark Collab password
+
+      We received a request to reset your Spark Collab password.
+
+      Reset your password:
+      ${resetUrl}
+
+      This link will expire in 30 minutes.
+
+      If you didn't request this, you can safely ignore this email.
+    `);
+
+  await mailerSend.email.send(emailParams);
+};
