@@ -1,389 +1,585 @@
 # Spark Collab
 
-A full-stack collaborative web application for creating and managing interactive boards with secure authentication and a modern React interface.
+A full-stack real-time collaborative whiteboard application that allows users to create, manage, share, and collaborate on boards with role-based access control.
 
 ## 🚀 Live Demo
 
-- **Frontend:** https://spark-collab-client.onrender.com
-- **Backend API:** https://spark-collab-server.onrender.com
+* **Frontend:** https://spark-collab-client.onrender.com
+* **Backend:** https://spark-collab-server.onrender.com
 
-## 📌 Overview
+## 📌 Features
 
-Spark Collab is a full-stack collaboration application built with React.js, Node.js, Express.js, and PostgreSQL.
+### 🔐 Authentication & Security
 
-The application allows users to securely authenticate, create and manage boards, and work with an interactive board workspace.
+* User registration and login
+* JWT-based authentication using **HttpOnly cookies**
+* Secure password hashing using **bcrypt**
+* Protected routes
+* Automatic authentication state handling
+* Logout functionality
+* Forgot password functionality
+* Secure password reset using time-limited tokens
+* Password reset tokens are hashed before being stored in the database
+* Password reset links expire after 30 minutes
 
-The project is containerized using Docker and deployed on Render, with PostgreSQL hosted on Supabase.
+### 📋 Board Management
 
-## ✨ Features
+* Create new boards
+* View all boards
+* Open and edit boards
+* Rename boards
+* Delete boards
+* Board ownership management
 
-- User registration and login
-- JWT-based authentication
-- Secure HttpOnly authentication cookies
-- Protected API routes
-- Create, read, update, and delete boards
-- Board ownership and authorization
-- Interactive board workspace
-- Responsive user interface
-- RESTful backend API
-- PostgreSQL database
-- Dockerized frontend and backend
-- Nginx for production frontend serving
-- Docker Compose for local development
-- Production deployment using Render
-- Supabase PostgreSQL integration
-- Environment-based configuration
+### 👥 Real-Time Collaboration
+
+* Real-time collaboration using WebSockets
+* Multiple users can work on the same board
+* Live synchronization of board changes
+* Real-time updates between connected users
+
+### 🔗 Board Sharing
+
+* Share boards with other users
+* Add members to boards
+* Manage board members
+* Role-based access control
+
+### 🛡️ Role-Based Permissions
+
+Boards support three roles:
+
+| Role       | Permissions                                                          |
+| ---------- | -------------------------------------------------------------------- |
+| **Owner**  | Full board access, member management, undo/redo, zoom, reset, delete |
+| **Editor** | Edit board, undo/redo, zoom, reset                                   |
+| **Viewer** | View board, zoom, reset                                              |
+
+Permissions are enforced on the backend to prevent unauthorized operations.
+
+### 🎨 Whiteboard
+
+* Interactive canvas powered by **React Konva**
+* Drawing and canvas interactions
+* Select and manipulate elements
+* Zoom controls
+* Canvas reset
+* Undo / Redo
+* Delete selected elements
+* Board-specific canvas state
+* Real-time synchronization
+
+### 👤 User Profile
+
+* View user information
+* Update profile information
+
+### 📧 Email
+
+* Password reset emails using **MailerSend**
+* HTML and plain-text email support
+* Secure password reset links
+
+### ⚡ Performance
+
+* Lazy-loaded application pages
+* Route-based code splitting
+* Loading states using Ant Design
+* Optimized frontend bundle loading
+
+### 📱 Responsive UI
+
+* Responsive layout
+* Built with **Tailwind CSS**
+* UI components powered by **Ant Design**
+* Light theme with emerald accents
+
+---
 
 ## 🛠️ Tech Stack
 
 ### Frontend
 
-- React.js
-- Vite
-- Ant Design
-- Tailwind CSS
-- Axios
-- React Router
-- Konva
+* React
+* Vite
+* React Router
+* Ant Design
+* Tailwind CSS
+* Sass
+* Axios
+* React Konva
+* Konva
+* Day.js
 
 ### Backend
 
-- Node.js
-- Express.js
-- PostgreSQL
-- JWT
-- bcrypt
-- cookie-parser
-- CORS
+* Node.js
+* Express.js
+* PostgreSQL
+* JWT
+* bcrypt
+* cookie-parser
+* CORS
+* WebSockets
+* MailerSend
 
 ### Database
 
-- PostgreSQL
-- Supabase
+* PostgreSQL
+* Supabase PostgreSQL
 
-### DevOps & Deployment
+### Deployment
 
-- Docker
-- Docker Compose
-- Nginx
-- Render
-- Git
-- GitHub
+* Docker
+* Nginx
+* Render
 
-## 🏗️ Architecture
+---
 
-    ┌──────────────────────────┐
-    │      React Client        │
-    │                          │
-    │ React + Vite             │
-    │ Ant Design               │
-    │ Tailwind CSS + Sass      │
-    └────────────┬─────────────┘
-                 │
-                 │ HTTPS / REST API
-                 ▼
-    ┌──────────────────────────┐
-    │      Express Server      │
-    │        Node.js           │
-    │                          │
-    │ Authentication           │
-    │ Middleware               │
-    │ Controllers              │
-    │ Services                 │
-    │ Models                   │
-    └────────────┬─────────────┘
-                 │
-                 │ PostgreSQL
-                 ▼
-    ┌──────────────────────────┐
-    │        Supabase          │
-    │      PostgreSQL DB       │
-    └──────────────────────────┘
+## 📂 Project Structure
 
-## 📁 Project Structure
+```text
+spark-collab/
+│
+├── client/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── contexts/
+│   │   ├── pages/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   ├── utils/
+│   │   └── ...
+│   │
+│   ├── Dockerfile
+│   └── ...
+│
+├── server/
+│   ├── src/
+│   │   ├── config/
+│   │   ├── controllers/
+│   │   ├── middleware/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   ├── sockets/
+│   │   ├── utils/
+│   │   ├── app.js
+│   │   └── server.js
+│   │
+│   ├── Dockerfile
+│   └── ...
+│
+├── compose.yaml
+└── README.md
+```
 
-    spark-collab/
-    │
-    ├── client/
-    │   ├── public/
-    │   ├── src/
-    │   ├── Dockerfile
-    │   ├── nginx.conf
-    │   ├── package.json
-    │   ├── package-lock.json
-    │   └── vite.config.js
-    │
-    ├── server/
-    │   ├── config/
-    │   ├── controllers/
-    │   ├── middlewares/
-    │   ├── models/
-    │   ├── routes/
-    │   ├── services/
-    │   ├── utils/
-    │   ├── app.js
-    │   ├── index.js
-    │   ├── Dockerfile
-    │   ├── package.json
-    │   └── package-lock.json
-    │
-    └── compose.yaml
+---
 
-## 🔐 Authentication
+## 🔑 Environment Variables
 
-Spark Collab uses JWT-based authentication with HttpOnly cookies.
+### Frontend
 
-### Authentication Flow
+Create an environment file inside the client directory:
 
-1. User submits username and password.
-2. The backend validates the credentials.
-3. A JWT access token is generated.
-4. The token is stored in an HttpOnly cookie.
-5. The browser automatically sends the cookie with authenticated requests.
-6. Authentication middleware verifies the JWT.
-7. The authenticated user's information is attached to the request.
-8. Protected resources can then be accessed.
+```env
+VITE_API_URL=http://localhost:3000
+```
 
-### Production Cookie Configuration
+For production:
 
-Production authentication cookies use:
+```env
+VITE_API_URL=https://spark-collab-server.onrender.com
+```
 
-- HttpOnly
-- Secure
-- SameSite=None
+### Backend
 
-This allows secure authentication between the separately deployed frontend and backend services.
+Create an `env.local` file inside the server directory:
 
-## 📡 API Endpoints
+```env
+PORT=3000
 
-### Authentication
+DATABASE_URL=your_database_connection_string
 
-    POST   /api/auth/register
-    POST   /api/auth/login
-    POST   /api/auth/logout
-    GET    /api/auth/me
+JWT_SECRET=your_jwt_secret
 
-### Boards
+CLIENT_URL=http://localhost:5173
 
-    POST   /api/boards
-    GET    /api/boards
-    GET    /api/boards/:id
-    PUT    /api/boards/:id
-    DELETE /api/boards/:id
+MAIL_SEND_TOKEN=your_mailersend_token
+```
 
-Board endpoints are protected and require an authenticated user.
+For production:
 
-## 🐳 Docker
+```env
+CLIENT_URL=https://spark-collab-client.onrender.com
+```
 
-The application uses Docker to containerize both the frontend and backend.
+> Never commit environment files containing secrets to Git.
 
-### Backend Docker Container
-
-The backend runs inside a Node.js container.
-
-The Docker image installs the backend dependencies, copies the application source code, and starts the Express server.
-
-### Frontend Docker Container
-
-The frontend uses a multi-stage Docker build.
-
-The first stage uses Node.js to:
-
-1. Install dependencies.
-2. Build the React application using Vite.
-3. Generate the production `dist` directory.
-
-The second stage uses Nginx to serve the generated static files.
-
-    Node.js
-       │
-       ├── Install dependencies
-       │
-       ├── Build React application
-       │
-       ▼
-      dist/
-       │
-       ▼
-    Nginx
-       │
-       └── Serve production frontend
-
-### Docker Compose
-
-Docker Compose is used to run the frontend and backend services together during local development.
-
-Build and start the application:
-
-    docker compose up --build
-
-Run in detached mode:
-
-    docker compose up --build -d
-
-Stop the containers:
-
-    docker compose down
-
-## ⚙️ Environment Variables
-
-Environment variables are used to keep configuration and sensitive credentials outside the source code.
-
-### Backend Environment Variables
-
-Example local configuration:
-
-    PORT=3000
-    DATABASE_URL=your_postgresql_connection_string
-    JWT_SECRET=your_jwt_secret
-    JWT_EXPIRES_IN=your_jwt_expiration
-    COOKIE_MAX_AGE=your_cookie_max_age
-    CLIENT_URL=http://localhost:5173
-
-Production environment variables are configured through Render.
-
-### Frontend Environment Variables
-
-Local development:
-
-    VITE_API_BASE_URL=http://localhost:3000/api
-
-Production:
-
-    VITE_API_BASE_URL=https://spark-collab-server.onrender.com/api
-
-Vite environment variables prefixed with `VITE_` are embedded into the application during the production build.
+---
 
 ## 💻 Local Development
 
-### Clone the Repository
+### 1. Clone the repository
 
-    git clone https://github.com/SaishSawant21/spark-collab.git
-    cd spark-collab
+```bash
+git clone https://github.com/SaishSawant21/spark-collab.git
+cd spark-collab
+```
 
-### Install Frontend Dependencies
+### 2. Install frontend dependencies
 
-    cd client
-    npm install
+```bash
+cd client
+npm install
+```
 
-### Install Backend Dependencies
+### 3. Install backend dependencies
 
-    cd ../server
-    npm install
+```bash
+cd ../server
+npm install
+```
 
-### Configure Environment Variables
+### 4. Configure environment variables
 
-Configure the required environment variables for both the frontend and backend.
+Create the required environment files and add the necessary values.
 
-### Start the Backend
+### 5. Start the backend
 
-    cd server
-    npm run dev
+```bash
+npm run dev
+```
 
-The backend runs on:
+The backend will run on:
 
-    http://localhost:3000
+```text
+http://localhost:3000
+```
 
-### Start the Frontend
+### 6. Start the frontend
 
 Open another terminal:
 
-    cd client
-    npm run dev
+```bash
+cd client
+npm run dev
+```
 
-The frontend runs on:
+The frontend will run on:
 
-    http://localhost:5173
+```text
+http://localhost:5173
+```
 
-## ☁️ Deployment
+---
 
-The application is deployed using Render.
+## 🐳 Running with Docker Compose
 
-### Frontend Deployment
+The project includes a `compose.yaml` file for running the application using Docker Compose.
 
-The frontend is deployed as a Docker service.
+Build and start the containers:
 
-The Docker build process:
+```bash
+docker compose up --build
+```
 
-1. Pulls the Node.js base image.
-2. Installs frontend dependencies.
-3. Builds the React application using Vite.
-4. Creates an Nginx production image.
-5. Copies the generated `dist` directory into Nginx.
-6. Copies the custom Nginx configuration.
-7. Runs Nginx to serve the frontend.
+Run in detached mode:
 
-### Backend Deployment
+```bash
+docker compose up -d --build
+```
 
-The backend is deployed as a separate Docker service.
+Stop the containers:
 
-The backend:
+```bash
+docker compose down
+```
 
-1. Runs inside a Node.js Docker container.
-2. Exposes the application port provided by Render.
-3. Connects to the Supabase PostgreSQL database.
-4. Provides the REST API to the frontend.
+---
 
-### Database Deployment
+## 🗄️ Database
 
-The production database is hosted on Supabase PostgreSQL.
+Spark Collab uses PostgreSQL as its primary database.
 
-The backend connects to Supabase using a PostgreSQL connection string stored as an environment variable.
+Supabase PostgreSQL is used for the deployed application.
+
+The database stores information such as:
+
+* Users
+* Boards
+* Board members
+* Board roles
+* Password reset tokens
+* Password reset token expiration times
+
+Password reset tokens are stored as SHA-256 hashes rather than plain-text tokens.
+
+---
+
+## 🔐 Authentication Flow
+
+### Registration
+
+```text
+User
+ ↓
+Registration Form
+ ↓
+Backend API
+ ↓
+Password hashed with bcrypt
+ ↓
+User stored in PostgreSQL
+```
+
+### Login
+
+```text
+User
+ ↓
+Login Form
+ ↓
+Backend API
+ ↓
+Credentials verified
+ ↓
+JWT generated
+ ↓
+JWT stored in HttpOnly cookie
+```
+
+### Protected Requests
+
+```text
+Browser
+ ↓
+HttpOnly Cookie
+ ↓
+Express Middleware
+ ↓
+JWT Verification
+ ↓
+Authenticated Request
+```
+
+### Password Reset
+
+```text
+User
+ ↓
+Forgot Password
+ ↓
+Reset token generated
+ ↓
+Token hashed with SHA-256
+ ↓
+Hash + expiry stored in PostgreSQL
+ ↓
+Reset email sent using MailerSend
+ ↓
+User opens reset link
+ ↓
+Token validated
+ ↓
+New password hashed with bcrypt
+ ↓
+Password updated
+ ↓
+Reset token removed
+```
+
+---
+
+## 🔌 API Overview
+
+### Authentication
+
+| Method | Endpoint                    | Description            |
+| ------ | --------------------------- | ---------------------- |
+| POST   | `/api/auth/register`        | Register a new user    |
+| POST   | `/api/auth/login`           | Login                  |
+| POST   | `/api/auth/logout`          | Logout                 |
+| GET    | `/api/auth/me`              | Get authenticated user |
+| POST   | `/api/auth/forgot-password` | Request password reset |
+| POST   | `/api/auth/reset-password`  | Reset password         |
+
+### Boards
+
+Board APIs support operations such as:
+
+* Create board
+* List boards
+* Get board
+* Update board
+* Delete board
+* Manage board members
+* Manage board permissions
+
+All board operations are protected by authentication and authorization middleware.
+
+---
+
+## 🌐 WebSocket Collaboration
+
+Spark Collab uses WebSockets for real-time board collaboration.
+
+The WebSocket layer allows connected users to receive board changes without refreshing the page.
+
+The collaboration flow is approximately:
+
+```text
+User A
+   ↓
+Canvas Change
+   ↓
+WebSocket Server
+   ↓
+Connected Users
+   ↓
+User B / User C
+```
+
+Board access permissions are checked so users can only perform operations allowed by their assigned role.
+
+---
 
 ## 🔒 Security
 
-- Passwords are hashed using bcrypt.
-- Authentication is handled using JWT.
-- JWT tokens are stored in HttpOnly cookies.
-- Production cookies use Secure and SameSite=None.
-- Protected API routes require authentication.
-- CORS is configured to allow requests from the deployed frontend.
-- Database credentials are stored in environment variables.
-- JWT secrets are stored in environment variables.
-- Sensitive environment files are not committed to the repository.
+The application implements several security practices:
 
-## 🧪 Production Stack
+* Password hashing with bcrypt
+* JWT authentication
+* HttpOnly authentication cookies
+* Secure cookies in production
+* CORS configuration
+* Backend authorization checks
+* Role-based permissions
+* Hashed password reset tokens
+* Expiring password reset tokens
+* Environment variables for secrets
+* No sensitive credentials committed to Git
 
-    Frontend
-    React + Vite
-          ↓
-        Docker
-          ↓
-        Nginx
-          ↓
-        Render
+---
 
-    Backend
-    Node.js + Express
-          ↓
-        Docker
-          ↓
-        Render
-          ↓
-    Supabase PostgreSQL
+## 📦 Important Dependencies
 
-## 🔮 Future Improvements
+### Frontend
 
-- Real-time collaboration using WebSockets
-- Multiple users editing the same board simultaneously
-- Board sharing and invitations
-- Role-based board permissions
-- Additional canvas elements
-- Image and file uploads
-- Activity history
-- Notifications
-- Dark mode
-- Automated testing
-- CI/CD pipeline
+```text
+react
+react-router-dom
+antd
+axios
+tailwindcss
+sass
+react-konva
+konva
+dayjs
+```
+
+### Backend
+
+```text
+express
+pg
+bcrypt
+jsonwebtoken
+cookie-parser
+cors
+ws
+mailerSend
+dotenv
+```
+
+---
+
+## 🚀 Deployment
+
+The application is deployed using Docker containers and Render.
+
+### Frontend
+
+```text
+React + Vite
+      ↓
+Production Build
+      ↓
+Nginx
+      ↓
+Docker
+      ↓
+Render
+```
+
+### Backend
+
+```text
+Node.js + Express
+      ↓
+Docker
+      ↓
+Render
+```
+
+### Database
+
+```text
+Supabase PostgreSQL
+```
+
+---
+
+## 📈 Future Improvements
+
+* More advanced whiteboard elements
+* Shapes and drawing tools
+* Image and file uploads
+* Board activity history
+* Notifications
+* Invitation emails
+* More granular permissions
+* Board templates
+* Automated testing
+* CI/CD pipeline
+* Performance monitoring
+* Improved conflict handling
+* Dark mode
+* Additional collaboration features
+
+---
+
+## 🎯 Learning Goals
+
+This project was built to gain practical experience with:
+
+* React application architecture
+* REST APIs
+* Node.js and Express
+* PostgreSQL
+* Authentication and authorization
+* JWT and HttpOnly cookies
+* WebSockets
+* Real-time collaboration
+* Role-based access control
+* Password reset flows
+* Email API integration
+* Docker
+* Nginx
+* Cloud deployment
+* Frontend performance optimization
+
+---
 
 ## 👨‍💻 Author
 
 **Saish Sawant**
 
-GitHub: https://github.com/SaishSawant21
+* GitHub: https://github.com/SaishSawant21
+* Portfolio: https://portfolio-app-mocha-beta.vercel.app/
 
-Portfolio: https://portfolio-app-mocha-beta.vercel.app/
+---
 
 ## 📄 License
 
-This project is intended for educational and portfolio purposes.
+This project is created for learning and portfolio purposes.
