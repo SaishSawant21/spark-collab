@@ -4,10 +4,11 @@ import { useContext, useState } from "react"
 import { authenticateUser } from "../../services/authService";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const Login = () => {
 	const [loading, setLoading] = useState(false);
-	const { setIsLoggedIn } = useContext(AuthContext);
+	const { user, setIsLoggedIn } = useContext(AuthContext);
 	const navigate = useNavigate();
 	const onSubmit = async (values) => {
 		try {
@@ -29,6 +30,12 @@ const Login = () => {
 		required: true,
 		message: messageContants.requiredMsg
 	}
+
+	useEffect(() => {
+		if (user) {
+			navigate('/dashboard');
+		}
+	}, [])
 	return (
 		<Flex
 			justify="center"
