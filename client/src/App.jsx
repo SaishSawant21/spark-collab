@@ -7,11 +7,7 @@ function App() {
 
   return (
     <ConfigProvider theme={sparkCollabTheme}>
-      <AuthProvider>
-        <BoardsProvider>
-          <AppRoutes />
-        </BoardsProvider>
-      </AuthProvider>
+      <AppRoutes />
     </ConfigProvider>
   )
 }
