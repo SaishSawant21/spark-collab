@@ -25,10 +25,9 @@ export const updatedBoardService = async (boardId, ownerId, title, description, 
 
 	const trimTitle = title?.trim() || existingBoard.title;
 	if (!trimTitle) throw createError('Title is compulsory', 400);
-	const trimDescription = description?.trim() || existingBoard.description;
 	const boardVisibility = is_public ?? existingBoard.is_public;
 	return await updatedBoardModel(
-		boardId, ownerId, trimTitle, trimDescription, boardVisibility
+		boardId, ownerId, trimTitle, description, boardVisibility
 	)
 }
 
