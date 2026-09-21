@@ -19,10 +19,8 @@ const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    if (isLoggedIn) {
-      loadUser();
-    }
-  }, [isLoggedIn]);
+    loadUser();
+  }, []);
 
   const logout = async () => {
     try {
