@@ -36,6 +36,7 @@ const Dashboard = () => {
 	const [editingBoard, setEditingBoard] = useState(null);
 	const [sharingBoard, setSharingBoard] = useState(null);
 	const [openShareModal, setOpenShareModal] = useState(false);
+	const [submitLoader, setSubmitLoader] = useState(false);
 	const { boards, loading, loadBoards } =
 		useContext(BoardsContext);
 	const [form] = Form.useForm();
@@ -94,6 +95,7 @@ const Dashboard = () => {
 
 	const handleSubmit = async (values) => {
 		try {
+			setSubmitLoader(true);
 			if (editingBoard) {
 				await updateBoard(
 					editingBoard.id,
@@ -121,6 +123,8 @@ const Dashboard = () => {
 				error?.response?.data?.message ||
 				messageContants.somethingWerntWrong
 			);
+		} finally {
+			setSubmitLoader(false);
 		}
 	};
 
@@ -444,7 +448,7 @@ const Dashboard = () => {
 						<Button
 							type="primary"
 							htmlType="submit"
-							loading={loading}
+							loading={submitLoader}
 							className="!rounded-lg !border-emerald-600 !bg-emerald-600 hover:!border-emerald-700 hover:!bg-emerald-700"
 						>
 							{editingBoard
