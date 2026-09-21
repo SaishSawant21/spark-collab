@@ -9,33 +9,39 @@ const { Content } = Layout;
 
 const BoardLayout = ({ children }) => {
 	const location = useLocation();
-	const isViewer = location?.state?.role === 'viewer';
+	const isViewer = location?.state?.role === "viewer";
+
 	return (
 		<Layout className="h-screen overflow-hidden">
+
 			<AppHeader
 				showBoardSelector={true}
 				showExport={true}
 			/>
 
 			<Layout className="min-h-0 flex-1">
-				{!isViewer && <div className="hidden md:block">
-					<LeftSidebar />
-				</div>}
-				<Layout className="min-h-0 min-w-0">
-					<Content className={`min-h-0 overflow-hidden bg-slate-500 ${isViewer ? "pointer-events-none" : ""}`}>
+
+				{!isViewer && <LeftSidebar />}
+
+				<Layout className="min-h-0 min-w-0 flex-1">
+
+					<Content
+						className={`min-h-0 overflow-hidden bg-slate-500 ${isViewer ? "pointer-events-none" : ""
+							}`}
+					>
 						{children}
 					</Content>
 
 					<div className="hidden md:block">
 						<AppFooter isCanvas={true} />
 					</div>
+
 				</Layout>
-				{!isViewer &&
-					<div className="hidden md:block">
-						<RightSidebar />
-					</div>
-				}
+
+				{!isViewer && <RightSidebar />}
+
 			</Layout>
+
 		</Layout>
 	);
 };
