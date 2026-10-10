@@ -4,6 +4,16 @@ import { useState } from "react";
 /* eslint-disable react-hooks/exhaustive-deps */
 const useBoardSocket = (boardId, updateElements, replaceElements) => {
   const [remoteSelections, setRemoteSelections] = useState({});
+  const [remoteCursors, setRemoteCursors] = useState({});
+
+  const sendCursorPosition = (x, y) => {
+    if (!socket.connected) return;
+
+    socket.emit("cursor-moved", {
+      x,
+      y,
+    });
+  };
   useEffect(() => {
     if (!boardId) return;
 
@@ -63,6 +73,17 @@ const useBoardSocket = (boardId, updateElements, replaceElements) => {
       });
     };
 
+    const onCursorMoved = ({ socketId, username, x, y }) => {
+      setRemoteCursors((prev) => ({
+        ...prev,
+        [socketId]: {
+          username,
+          x,
+          y,
+        },
+      }));
+    };
+
     const onUserDisconnected = ({ socketId }) => {
       setRemoteSelections((prev) => {
         const next = { ...prev };
@@ -79,6 +100,7 @@ const useBoardSocket = (boardId, updateElements, replaceElements) => {
     socket.on("elements-replaced", onElementsReplaced);
     socket.on("element-selected", onElementSelected);
     socket.on("element-deselected", onElementDeselected);
+    socket.on("cursor-moved", onCursorMoved);
     socket.on("user-disconnected", onUserDisconnected);
     if (!socket.connected) {
       socket.connect();
@@ -95,9 +117,16 @@ const useBoardSocket = (boardId, updateElements, replaceElements) => {
       socket.off("elements-replaced", onElementsReplaced);
       socket.off("element-selected", onElementSelected);
       socket.off("element-deselected", onElementDeselected);
+      socket.off("cursor-moved", onCursorMoved);
       socket.off("user-disconnected", onUserDisconnected);
     };
   }, [boardId, updateElements]);
+
+  return {
+    remoteSelections,
+    remoteCursors,
+    sendCursorPosition,
+  };
 };
 
 export default useBoardSocket;

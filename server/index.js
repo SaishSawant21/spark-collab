@@ -2,7 +2,10 @@ import express from 'express';
 import app from './app.js';
 import db from './config/db.js';
 import http from 'http';
+import cookieParser from 'cookie-parser';
 import { Server } from 'socket.io';
+import { verifyAccessToken } from './utils/jwt.js';
+import { getUserByIdModel } from './models/userModel.js';
 
 const port = 3000;
 
@@ -31,9 +34,46 @@ const io = new Server(server, {
     },
 });
 
+io.use(async (socket, next) => {
+    try {
+        const req = socket.request;
+
+        cookieParser()(req, {}, () => { });
+
+        const token = req.cookies?.accessToken;
+
+        if (!token) {
+            return next(new Error("Unauthorized"));
+        }
+
+        const decoded = verifyAccessToken(token);
+        const userId = decoded.id || decoded.sub;
+
+        if (!userId) {
+            return next(new Error("Invalid token"));
+        }
+
+        const user = await getUserByIdModel(userId);
+
+        if (!user) {
+            return next(new Error("User not found"));
+        }
+
+        socket.data.userId = user.id;
+        socket.data.username = user.username;
+
+        next();
+    } catch (error) {
+        console.error("Socket authentication failed:", error);
+        next(new Error("Unauthorized"));
+    }
+});
+
 io.on("connection", (socket) => {
+    console.log("Connected:", socket.id);
 
     socket.on("join-board", ({ boardId }) => {
+        console.log(`${socket.id} joined board ${boardId}`);
 
         socket.join(`board-${boardId}`);
 
@@ -100,6 +140,28 @@ io.on("connection", (socket) => {
         });
     });
 
+    socket.on("cursor-moved", ({ x, y }) => {
+        const boardId = socket.data.boardId;
+        const username = socket.data.username;
+
+        console.log("Cursor received:", {
+            socketId: socket.id,
+            boardId,
+            username,
+            x,
+            y,
+        });
+
+        if (!boardId) return;
+
+        socket.to(`board-${boardId}`).emit("cursor-moved", {
+            socketId: socket.id,
+            username: username || "Collaborator",
+            x,
+            y,
+        });
+    });
+    
     socket.on("disconnect", (reason) => {
         console.log("Disconnected:", socket.id, reason);
     });

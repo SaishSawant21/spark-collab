@@ -1,15 +1,18 @@
-import { Stage, Layer, Transformer } from "react-konva";
+import {
+	Stage,
+	Layer,
+	Transformer,
+	Group,
+	Line,
+	Text,
+} from "react-konva";
 import { useContext, useEffect, useRef, useState } from "react";
-
 import { BoardContext } from "../../context/BoardContext";
-
 import useDrawing from "../hooks/useDrawing";
 import useTransformer from "../hooks/useTransformer";
 import useSelection from "../hooks/useSelection";
 import useKeyboardShortcuts from "../hooks/useKeyboardShortcuts";
-
 import elementRegistry from "./elements/elementRegistry";
-
 import { TOOLS } from "../../utils/constants";
 import {
 	getCanvasCursor,
@@ -21,7 +24,7 @@ import { useLocation } from "react-router-dom";
 /* eslint-disable react-hooks/exhaustive-deps */
 const Canvas = () => {
 	const location = useLocation();
-	const isViewer = location?.state?.role === 'viewer';
+	const isViewer = location?.state?.role === "viewer";
 	const {
 		currentElement,
 		selectedElementId,
@@ -32,6 +35,8 @@ const Canvas = () => {
 		setScale,
 		setStagePosition,
 		stageRef,
+		sendCursorPosition,
+		remoteCursors,
 	} = useContext(BoardContext);
 
 	const containerRef = useRef(null);
@@ -51,6 +56,7 @@ const Canvas = () => {
 	} = useDrawing();
 
 	const { handleStageDown } = useSelection();
+
 	const selectedElement = elements.find(
 		(element) =>
 			String(element.id) ===
@@ -105,6 +111,36 @@ const Canvas = () => {
 		setStagePosition(newPosition);
 	};
 
+	const handleCursorMove = (e) => {
+		handleMouseMove(e);
+
+		if (!sendCursorPosition) return;
+
+		const stage = e.target.getStage();
+		const pointer = stage.getPointerPosition();
+
+		if (!pointer) return;
+
+		/*
+		 * Convert the mouse position from screen coordinates
+		 * back into board coordinates.
+		 *
+		 * This keeps remote cursors aligned when the board
+		 * is zoomed or panned.
+		 */
+		const transform =
+			stage.getAbsoluteTransform().copy();
+
+		transform.invert();
+
+		const position = transform.point(pointer);
+
+		sendCursorPosition(
+			position.x,
+			position.y
+		);
+	};
+
 	useEffect(() => {
 		if (!containerRef.current) return;
 
@@ -132,7 +168,9 @@ const Canvas = () => {
 	useEffect(() => {
 		if (!stageRef.current) return;
 
-		stageRef.current.container().style.cursor =
+		stageRef.current
+			.container()
+			.style.cursor =
 			getCanvasCursor(selectedTool);
 	}, [selectedTool]);
 
@@ -170,7 +208,7 @@ const Canvas = () => {
 				draggable={
 					selectedTool === TOOLS.SELECT
 				}
-				onMouseMove={handleMouseMove}
+				onMouseMove={handleCursorMove}
 				onMouseUp={handleMouseUp}
 				onWheel={handleWheel}
 				onMouseDown={(e) => {
@@ -225,15 +263,79 @@ const Canvas = () => {
 						renderCurrentElement(
 							currentElement
 						)}
+
+					{/* Remote collaborator cursors */}
+					{Object.entries(
+						remoteCursors || {}
+					).map(
+						([
+							socketId,
+							cursor,
+						]) => {
+							if (!cursor) return null;
+
+							return (
+								<Group
+									key={socketId}
+									x={cursor.x}
+									y={cursor.y}
+									listening={false}
+								>
+									{/* Cursor pointer */}
+									<Line
+										points={[
+											0,
+											0,
+											0,
+											18,
+											5,
+											13,
+											10,
+											22,
+											14,
+											19,
+											8,
+											11,
+											16,
+											11,
+										]}
+										closed
+										fill="#10B981"
+										stroke="#047857"
+										strokeWidth={1}
+										shadowColor="rgba(0,0,0,0.2)"
+										shadowBlur={3}
+										shadowOffset={{
+											x: 1,
+											y: 1,
+										}}
+									/>
+
+									{/* Collaborator label */}
+									<Text
+										x={18}
+										y={18}
+										text={cursor.username || "Collaborator"}
+										fontSize={12}
+										fontStyle="bold"
+										fill="#047857"
+										padding={4}
+									/>
+								</Group>
+							);
+						}
+					)}
 				</Layer>
 			</Stage>
+
 			<TextEditor />
-			{!isViewer && <MobileCanvasControllers
-				open={mobileControlsOpen}
-				setOpen={setMobileControlsOpen}
-				selectedElement={selectedElement}
-			/>
-			}
+			{!isViewer && (
+				<MobileCanvasControllers
+					open={mobileControlsOpen}
+					setOpen={setMobileControlsOpen}
+					selectedElement={selectedElement}
+				/>
+			)}
 		</div>
 	);
 };

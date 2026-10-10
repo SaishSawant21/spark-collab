@@ -1,13 +1,16 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState, useEffect } from "react";
 import { BoardContext } from "./BoardContext";
 import { messageContants, TOOLS } from "../utils/constants";
 import useElementActions from "./actions/elementActions";
 import useBoardSocket from "../pages/hooks/useBoardSocket";
 import { socket } from "../socket";
 import { useParams } from "react-router-dom";
-import { fetchBoardElements, replaceBoardElements } from "../services/boardElementService";
-import { useEffect } from "react";
+import {
+  fetchBoardElements,
+  replaceBoardElements,
+} from "../services/boardElementService";
 import { message } from "antd";
+
 const BoardProvider = ({ children }) => {
   const [selectedTool, setSelectedTool] = useState(TOOLS.SELECT);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -23,7 +26,9 @@ const BoardProvider = ({ children }) => {
   const [scale, setScale] = useState(1);
   const [editingTextId, setEditingTextId] = useState(null);
   const [editingText, setEditingText] = useState("");
+
   const { boardId } = useParams() || null;
+
   const stageRef = useRef(null);
 
   const updateElements = useCallback((updater) => {
@@ -112,6 +117,7 @@ const BoardProvider = ({ children }) => {
       setElements([]);
     }
   };
+
   const zoomIn = () => {
     setScale((prev) => Math.min(prev + 0.1, 3));
   };
@@ -130,10 +136,19 @@ const BoardProvider = ({ children }) => {
 
   useEffect(() => {
     if (!boardId) return;
-    loadBoardElements();
-  }, [boardId])
 
-  useBoardSocket(boardId, updateElements, replaceElements);
+    loadBoardElements();
+  }, [boardId]);
+
+  const {
+    remoteCursors,
+    sendCursorPosition,
+  } = useBoardSocket(
+    boardId,
+    updateElements,
+    replaceElements
+  );
+
   const {
     bringForward,
     sendBackward,
@@ -167,7 +182,6 @@ const BoardProvider = ({ children }) => {
     replaceElements,
 
     undo,
-
     redo,
 
     duplicateSelectedElement,
@@ -175,9 +189,11 @@ const BoardProvider = ({ children }) => {
     sendBackward,
     bringToFront,
     sendToBack,
+
     scale,
     zoomIn,
     zoomOut,
+
     stagePosition,
     setStagePosition,
     resetView,
@@ -188,12 +204,16 @@ const BoardProvider = ({ children }) => {
 
     editingText,
     setEditingText,
+
+    // Real-time collaboration
+    remoteCursors,
+    sendCursorPosition,
   };
 
   return (
     <BoardContext.Provider value={value}>
       {children}
     </BoardContext.Provider>
-  )
-}
+  );
+};
 export default BoardProvider;
