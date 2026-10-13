@@ -5,6 +5,11 @@ import { useState } from "react";
 const useBoardSocket = (boardId, updateElements, replaceElements) => {
   const [remoteSelections, setRemoteSelections] = useState({});
   const [remoteCursors, setRemoteCursors] = useState({});
+  const [boardUsers, setBoardUsers] = useState([]);
+
+  const onBoardUsers = (users) => {
+    setBoardUsers(Array.isArray(users) ? users : []);
+  };
 
   const sendCursorPosition = (x, y) => {
     if (!socket.connected) return;
@@ -90,6 +95,12 @@ const useBoardSocket = (boardId, updateElements, replaceElements) => {
         delete next[socketId];
         return next;
       });
+
+      setRemoteCursors((prev) => {
+        const next = { ...prev };
+        delete next[socketId];
+        return next;
+      });
     };
 
     socket.on("element-created", onElementCreated);
@@ -102,6 +113,7 @@ const useBoardSocket = (boardId, updateElements, replaceElements) => {
     socket.on("element-deselected", onElementDeselected);
     socket.on("cursor-moved", onCursorMoved);
     socket.on("user-disconnected", onUserDisconnected);
+    socket.on("board-users", onBoardUsers);
     if (!socket.connected) {
       socket.connect();
     } else {
@@ -118,6 +130,7 @@ const useBoardSocket = (boardId, updateElements, replaceElements) => {
       socket.off("element-selected", onElementSelected);
       socket.off("element-deselected", onElementDeselected);
       socket.off("cursor-moved", onCursorMoved);
+      socket.off("board-users", onBoardUsers);
       socket.off("user-disconnected", onUserDisconnected);
     };
   }, [boardId, updateElements]);
@@ -126,6 +139,7 @@ const useBoardSocket = (boardId, updateElements, replaceElements) => {
     remoteSelections,
     remoteCursors,
     sendCursorPosition,
+    boardUsers,
   };
 };
 

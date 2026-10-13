@@ -143,6 +143,7 @@ const BoardProvider = ({ children }) => {
   const {
     remoteCursors,
     sendCursorPosition,
+    boardUsers,
   } = useBoardSocket(
     boardId,
     updateElements,
@@ -208,6 +209,7 @@ const BoardProvider = ({ children }) => {
     // Real-time collaboration
     remoteCursors,
     sendCursorPosition,
+    boardUsers,
   };
 
   return (

@@ -5,6 +5,7 @@ import {
 	Button,
 	Avatar,
 	Dropdown,
+	Tooltip,
 } from "antd";
 import {
 	DownloadOutlined,
@@ -27,6 +28,54 @@ import AddMemberModal from "../../components/AddMemberModal";
 
 const { Header } = Layout;
 const { Title } = Typography;
+const ActiveCollaborators = ({ users = [] }) => {
+	if (!users.length) return null;
+
+	const getInitials = (username) => {
+		return (username || "U")
+			.trim()
+			.split(/\s+/)
+			.slice(0, 2)
+			.map((part) => part.charAt(0).toUpperCase())
+			.join("");
+	};
+
+	return (
+		<Flex align="center" gap={8} className="shrink-0">
+			<Tooltip title={`${users.length} active collaborator${users.length === 1 ? "" : "s"}`}>
+				<span className="whitespace-nowrap text-xs font-medium text-slate-500">
+					{users.length} online
+				</span>
+			</Tooltip>
+
+			<Avatar.Group
+				size="small"
+				max={{
+					count: 3,
+					style: {
+						backgroundColor: "#ecfdf5",
+						color: "#059669",
+						fontSize: 11,
+					},
+				}}
+			>
+				{users.map((collaborator) => (
+					<Tooltip
+						key={collaborator.userId}
+						title={collaborator.username || "Collaborator"}
+					>
+						<Avatar
+							className="!border-2 !border-white !bg-emerald-100 !text-emerald-700"
+						>
+							{getInitials(collaborator.username)}
+						</Avatar>
+					</Tooltip>
+				))}
+			</Avatar.Group>
+		</Flex>
+	);
+};
+
 const DesktopHeader = ({
 	showBoardSelector,
 	showExport,
@@ -40,7 +89,8 @@ const DesktopHeader = ({
 	elements,
 	isBoardOwner,
 	open,
-	setOpen
+	setOpen,
+	boardUsers=[]
 }) => {
 
 	return (
@@ -145,6 +195,10 @@ const DesktopHeader = ({
 					gap={8}
 					className="shrink-0"
 				>
+					{showBoardSelector && (
+						<ActiveCollaborators users={boardUsers} />
+					)}
+
 					{isBoardOwner && (
 						<Button
 							type="text"
@@ -209,7 +263,8 @@ const MobileHeader = ({
 	menuItems,
 	isBoardOwner,
 	open,
-	setOpen
+	setOpen,
+	boardUsers=[]
 }) => {
 	return (
 		<Header className="!h-14 !border-b !border-slate-200 !bg-white !px-3">
@@ -236,6 +291,9 @@ const MobileHeader = ({
 						{currentBoard?.title || "Spark Collab"}
 					</span>
 				</div>
+				{showDashboardButton && boardUsers.length > 0 && (
+					<ActiveCollaborators users={boardUsers} />
+				)}
 				{isBoardOwner && (
 					<Button
 						type="text"
@@ -284,6 +342,7 @@ const AppHeader = ({
 	const boardContext = useContext(BoardContext);
 	const stageRef = boardContext?.stageRef;
 	const elements = boardContext?.elements;
+	const boardUsers = boardContext?.boardUsers ?? [];
 	const navigate = useNavigate();
 	const location = useLocation();
 	const { boardId } = useParams();
@@ -337,6 +396,7 @@ const AppHeader = ({
 					isBoardOwner={isBoardOwner}
 					open={openShareModal}
 					setOpen={setOpenShareModal}
+					boardUsers={boardUsers}
 				/>
 			</div>
 
@@ -351,6 +411,7 @@ const AppHeader = ({
 					isBoardOwner={isBoardOwner}
 					open={openShareModal}
 					setOpen={setOpenShareModal}
+					boardUsers={boardUsers}
 				/>
 			</div>
 		</>
