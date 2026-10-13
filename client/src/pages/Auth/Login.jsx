@@ -10,7 +10,6 @@ import {
 } from "antd";
 import { ArrowRightOutlined, LockOutlined } from "@ant-design/icons";
 import { authenticateUser } from "../../services/authService";
-import { AuthContext } from "../../context/AuthContext";
 import { messageContants } from "../../utils/constants";
 
 const { Title, Text } = Typography;
